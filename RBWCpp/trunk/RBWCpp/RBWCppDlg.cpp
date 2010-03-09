@@ -147,8 +147,6 @@ BOOL CRBWCppDlg::OnInitDialog()
 				int a = 1;
 			}
 		}
-		//int* a = new int(2);
-		//int iRes = rbwAPI.Get_CreatePointData(1, pData);
 	//}
 
 	//CLSID clsid;//= _T("{15c6f1e1-c97f-4c9a-8be9-7e9f3aea588b}");
