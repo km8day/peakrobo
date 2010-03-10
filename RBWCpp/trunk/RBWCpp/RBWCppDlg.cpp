@@ -114,10 +114,6 @@ BOOL CRBWCppDlg::OnInitDialog()
 			data->X = 0.0;data->Y = 0.0; data->z = 0.0;
 			data->Rx = 0.0; data->Ry = 0.0; data->Rz = 0.0;
 			hr = GetRecordInfoFromGuids(__uuidof(__RobotWorks500), 1, 0, 0x409, __uuidof(OrientationData), &pRI);
-			//VariantInit(&vnt);
-			//vnt.vt = VT_RECORD;
-			//vnt.pvRecord = &data;
-			//vnt.pRecInfo = pRI;
 			VARIANTARG v[2];
 			VariantInit(&v[0]);
 			VariantInit(&v[1]);
