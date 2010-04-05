@@ -1,6 +1,6 @@
 // Machine generated IDispatch wrapper class(es) created with Add Class from Typelib Wizard
 
-#import "F:\\Program Files\\RobotWorks500\\RobotWorks500.exe" no_namespace
+#import "F:\\Program Files\\RobotWorks65\\RobotWorks65.exe" no_namespace
 // CRBWAPI wrapper class
 
 class CRBWAPI : public COleDispatchDriver
