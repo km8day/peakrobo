@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "RBWCpp.h"
 #include "RBWCppDlg.h"
-#include "CSimple.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -102,7 +101,7 @@ BOOL CRBWCppDlg::OnInitDialog()
 	//{
 		OrientationData *pData;// = new OrientationData;
 		CLSID clsid;//= _T("{15c6f1e1-c97f-4c9a-8be9-7e9f3aea588b}");
-		HRESULT hr = CLSIDFromProgID(L"RobotWorks500.API", &clsid);
+		HRESULT hr = CLSIDFromProgID(L"RobotWorks65.API", &clsid);
 		IDispatch *pDis;
 		hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&pDis);
 		if(hr == S_OK)
@@ -113,7 +112,7 @@ BOOL CRBWCppDlg::OnInitDialog()
 			data->q4 = 0.0;
 			data->X = 0.0;data->Y = 0.0; data->z = 0.0;
 			data->Rx = 0.0; data->Ry = 0.0; data->Rz = 0.0;
-			hr = GetRecordInfoFromGuids(__uuidof(__RobotWorks500), 1, 0, 0x409, __uuidof(OrientationData), &pRI);
+			hr = GetRecordInfoFromGuids(__uuidof(__RobotWorks65), 1, 0, 0x409, __uuidof(OrientationData), &pRI);
 			VARIANTARG v[2];
 			VariantInit(&v[0]);
 			VariantInit(&v[1]);
@@ -130,7 +129,8 @@ BOOL CRBWCppDlg::OnInitDialog()
 			VariantInit(&varResult);
 			EXCEPINFO excep;
 			UINT uArgErr;
-			hr = pDis->Invoke(0x60030003, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_METHOD, &dispParam, &varResult, &excep, &uArgErr );
+			hr = pDis->Invoke(0x60030003, IID_NULL, LOCALE_SYSTEM_DEFAULT, 
+								DISPATCH_METHOD, &dispParam, &varResult, &excep, &uArgErr );
 			if(hr == S_OK)
 			{
 				VARIANTARG *pvarg = dispParam.rgvarg;
