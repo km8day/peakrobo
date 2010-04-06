@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(CRBWCppDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_GenerateText, &CRBWCppDlg::OnBnClickedGeneratetext)
 END_MESSAGE_MAP()
 
 
@@ -99,50 +100,56 @@ BOOL CRBWCppDlg::OnInitDialog()
 	//BOOL b = rbwAPI.CreateDispatch(_T("RobotWorks500.API"));
 	//if(b)
 	//{
-		OrientationData *pData;// = new OrientationData;
-		CLSID clsid;//= _T("{15c6f1e1-c97f-4c9a-8be9-7e9f3aea588b}");
-		HRESULT hr = CLSIDFromProgID(L"RobotWorks65.API", &clsid);
-		IDispatch *pDis;
-		hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&pDis);
-		if(hr == S_OK)
-		{
-			//VARIANT vnt;
-			IRecordInfo *pRI;
-			OrientationData* data = (OrientationData*)CoTaskMemAlloc(sizeof(OrientationData));
-			data->q4 = 0.0;
-			data->X = 0.0;data->Y = 0.0; data->z = 0.0;
-			data->Rx = 0.0; data->Ry = 0.0; data->Rz = 0.0;
-			hr = GetRecordInfoFromGuids(__uuidof(__RobotWorks65), 1, 0, 0x409, __uuidof(OrientationData), &pRI);
-			VARIANTARG v[2];
-			VariantInit(&v[0]);
-			VariantInit(&v[1]);
-			//////////////////////////////////////////////////////////////////////////
-			//very import step
-			v[0].vt = VT_RECORD|VT_BYREF;
-			//////////////////////////////////////////////////////////////////////////
-			v[0].pvRecord = data;
-			v[0].pRecInfo = pRI;
-			v[1].vt = VT_I4;
-			v[1].lVal = 3;
-			DISPPARAMS dispParam = {v, NULL, 2, 0};
-			VARIANT varResult;
-			VariantInit(&varResult);
-			EXCEPINFO excep;
-			UINT uArgErr;
-			hr = pDis->Invoke(0x60030003, IID_NULL, LOCALE_SYSTEM_DEFAULT, 
-								DISPATCH_METHOD, &dispParam, &varResult, &excep, &uArgErr );
-			if(hr == S_OK)
-			{
-				VARIANTARG *pvarg = dispParam.rgvarg;
-				VARIANT var = pvarg[0];
-				OrientationData *pD = (OrientationData*)var.pvRecord;
-				//OrientationData *pDa = *pD;
-				double dX = pD->X;
-				//VARIANT vX; VariantInit(&vX); vX.vt = VT_R8;
-				//hr = pRI->GetField(pdata, _T("X"), &vX);
-				int a = 1;
-			}
-		}
+
+
+		//OrientationData *pData;// = new OrientationData;
+		//CLSID clsid;//= _T("{15c6f1e1-c97f-4c9a-8be9-7e9f3aea588b}");
+		//HRESULT hr = CLSIDFromProgID(L"RobotWorks65.API", &clsid);
+		//IDispatch *pDis;
+		//hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&pDis);
+		//if(hr == S_OK)
+		//{
+		//	//VARIANT vnt;
+		//	IRecordInfo *pRI;
+		//	OrientationData* data = (OrientationData*)CoTaskMemAlloc(sizeof(OrientationData));
+		//	data->q4 = 0.0;
+		//	data->X = 0.0;data->Y = 0.0; data->z = 0.0;
+		//	data->Rx = 0.0; data->Ry = 0.0; data->Rz = 0.0;
+		//	hr = GetRecordInfoFromGuids(__uuidof(__RobotWorks65), 1, 0, 0x409, __uuidof(OrientationData), &pRI);
+		//	VARIANTARG v[2];
+		//	VariantInit(&v[0]);
+		//	VariantInit(&v[1]);
+		//	//////////////////////////////////////////////////////////////////////////
+		//	//very import step
+		//	v[0].vt = VT_RECORD|VT_BYREF;
+		//	//////////////////////////////////////////////////////////////////////////
+		//	v[0].pvRecord = data;
+		//	v[0].pRecInfo = pRI;
+		//	v[1].vt = VT_I4;
+		//	v[1].lVal = 3;
+		//	DISPPARAMS dispParam = {v, NULL, 2, 0};
+		//	VARIANT varResult;
+		//	VariantInit(&varResult);
+		//	EXCEPINFO excep;
+		//	UINT uArgErr;
+		//	hr = pDis->Invoke(0x60030003, IID_NULL, LOCALE_SYSTEM_DEFAULT, 
+		//						DISPATCH_METHOD, &dispParam, &varResult, &excep, &uArgErr );
+		//	if(hr == S_OK)
+		//	{
+		//		VARIANTARG *pvarg = dispParam.rgvarg;
+		//		VARIANT var = pvarg[0];
+		//		OrientationData *pD = (OrientationData*)var.pvRecord;
+		//		//OrientationData *pDa = *pD;
+		//		double dX = pD->X;
+		//		//VARIANT vX; VariantInit(&vX); vX.vt = VT_R8;
+		//		//hr = pRI->GetField(pdata, _T("X"), &vX);
+		//		int a = 1;
+		//	}
+		//}
+
+
+
+
 	//}
 
 	//CLSID clsid;//= _T("{15c6f1e1-c97f-4c9a-8be9-7e9f3aea588b}");
@@ -225,3 +232,21 @@ HCURSOR CRBWCppDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+void CRBWCppDlg::OnBnClickedGeneratetext()
+{
+	// TODO: Add your control notification handler code here
+	CRBW65API rbwAPI;
+	BOOL b = rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
+	if(b)
+	{
+		CComBSTR bstrVaule;
+		long lTable = 0;
+		long lRow = 1; 
+		long lColum = 3;
+		//short ret = rbwAPI.Get_TableCell(&lTable, &lRow, &lColum, &bstrVaule);
+		CString str = rbwAPI.Get_TableCell_ST(&lTable, &lRow, &lColum);
+		//double dX, dY, dZ, dRx, dRy, dRz;
+		//short ret = rbwAPI.Get_Position(&dX, &dY, &dZ, &dRx, &dRy, &dRz);
+	}
+}

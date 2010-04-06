@@ -226,7 +226,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\CRBWAPI.h"
+				RelativePath=".\CRBW65API.h"
 				>
 			</File>
 			<File
@@ -274,5 +274,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="RBWCpp.rc"
+		/>
 	</Globals>
 </VisualStudioProject>
