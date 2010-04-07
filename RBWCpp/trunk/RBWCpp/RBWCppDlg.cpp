@@ -235,8 +235,8 @@ HCURSOR CRBWCppDlg::OnQueryDragIcon()
 
 void CRBWCppDlg::OnBnClickedGeneratetext()
 {
-	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_EXPLORER|OFN_OVERWRITEPROMPT, 
-							_T("Text Files (*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
+	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
+							_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
 	if(filedlg.DoModal() != IDOK)
 		return;
 	CString strFullFileName = filedlg.GetPathName();
