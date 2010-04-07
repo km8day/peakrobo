@@ -4,11 +4,13 @@
 #include "stdafx.h"
 #include "RBWCpp.h"
 #include "RBWCppDlg.h"
+#include <tlhelp32.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+#define  RBW65EXE  _T("RobotWorks65.exe")
 
 // CRBWCppApp
 
@@ -56,7 +58,48 @@ BOOL CRBWCppApp::InitInstance()
 	// Change the registry key under which our settings are stored
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
-	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+	SetRegistryKey(_T("RobotWorks API call application 1"));
+	
+	//check if RobotWorks65.exe is running
+	HANDLE handle=CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
+
+	PROCESSENTRY32* info=new PROCESSENTRY32;
+	info->dwSize=sizeof(PROCESSENTRY32);
+	bool bRBW65Runing = false;
+	if(Process32First(handle,info))
+	{
+		if(GetLastError()==ERROR_NO_MORE_FILES )
+		{
+			bRBW65Runing = false;
+		}
+		else
+		{
+			CString strProcessExe = info->szExeFile;
+			//strProcessExe.Format("%s",info->szExeFile);
+			if(strProcessExe.CompareNoCase(RBW65EXE) == 0 )
+				bRBW65Runing = true;
+
+			while(Process32Next(handle,info)!=FALSE && !bRBW65Runing)
+			{
+				strProcessExe = info->szExeFile;
+				//strProcessExe.Format("%s",info->szExeFile);
+				if(strProcessExe.CompareNoCase(RBW65EXE) == 0)
+				{
+					bRBW65Runing = true;
+					break;
+				}
+			}
+		}
+	}
+	CloseHandle(handle);
+	delete info;
+	info = NULL;
+	if(!bRBW65Runing)
+	{
+		AfxMessageBox(_T("RobotWorks65 is not running!"));
+		return FALSE;
+	}
+
 	CoInitialize(NULL);
 	{
 		CRBWCppDlg dlg;

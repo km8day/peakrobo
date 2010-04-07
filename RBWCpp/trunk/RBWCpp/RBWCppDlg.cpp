@@ -235,6 +235,16 @@ HCURSOR CRBWCppDlg::OnQueryDragIcon()
 
 void CRBWCppDlg::OnBnClickedGeneratetext()
 {
+	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_EXPLORER|OFN_OVERWRITEPROMPT, 
+							_T("Text Files (*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
+	if(filedlg.DoModal() != IDOK)
+		return;
+	CString strFullFileName = filedlg.GetPathName();
+	
+	CStdioFile stdFile;
+	if(!stdFile.Open(strFullFileName, CFile::modeCreate|CFile::modeWrite))
+		return;
+	stdFile.Close();
 	// TODO: Add your control notification handler code here
 	CRBW65API rbwAPI;
 	BOOL b = rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
@@ -244,9 +254,6 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		long lTable = 0;
 		long lRow = 1; 
 		long lColum = 3;
-		//short ret = rbwAPI.Get_TableCell(&lTable, &lRow, &lColum, &bstrVaule);
 		CString str = rbwAPI.Get_TableCell_ST(&lTable, &lRow, &lColum);
-		//double dX, dY, dZ, dRx, dRy, dRz;
-		//short ret = rbwAPI.Get_Position(&dX, &dY, &dZ, &dRx, &dRy, &dRz);
 	}
 }
