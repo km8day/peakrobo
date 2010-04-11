@@ -241,19 +241,80 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		return;
 	CString strFullFileName = filedlg.GetPathName();
 	
-	CStdioFile stdFile;
-	if(!stdFile.Open(strFullFileName, CFile::modeCreate|CFile::modeWrite))
+	CFile file;
+	if(!file.Open(strFullFileName, CFile::modeCreate|CFile::modeWrite))
 		return;
-	stdFile.Close();
+	
 	// TODO: Add your control notification handler code here
-	CRBW65API rbwAPI;
-	BOOL b = rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
-	if(b)
+	BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
+	if(!b) 
 	{
-		CComBSTR bstrVaule;
-		long lTable = 0;
-		long lRow = 1; 
-		long lColum = 3;
-		CString str = rbwAPI.Get_TableCell_ST(&lTable, &lRow, &lColum);
+		AfxMessageBox(_T("Can't create RobotWorks65.API object!"));
+		return;
 	}
+	
+	char chcomma = ',';
+	char *chline = "\r\n";
+	//write frame vaule
+	char ch[] = "FRAME VAULE= ";
+	file.Write(ch, strlen(ch));
+
+	char *chx = NULL;
+	char *chy = NULL;
+	char *chz = NULL;
+	char *chc = NULL;
+	char *chb = NULL;
+	char *cha= NULL;
+	GetFrameData(&chx, &chy, &chz, &chc, &chb, &cha);
+	file.Write(chx, strlen(chx));
+	file.Write(&chcomma, 1);
+	file.Write(chy, strlen(chy));
+	file.Write(&chcomma, 1);
+	file.Write(chz, strlen(chz));
+	file.Write(&chcomma, 1);
+	file.Write(chc, strlen(chc));
+	file.Write(&chcomma, 1);
+	file.Write(chb, strlen(chb));
+	file.Write(&chcomma, 1);
+	file.Write(cha, strlen(cha));
+	file.Write(chline, strlen(chline));
+	file.Write(chline, strlen(chline));
+	
+	//get tool data
+	GetToolData(&chx, &chy, &chz, &chc, &chb, &cha);
+	file.Close();
+}
+
+char *CRBWCppDlg::GetTableCellString(long lTable, long lRow, long lCol)
+{
+	USES_CONVERSION;
+	CComBSTR bstrVaule;
+	short iRet = m_rbwAPI.Get_TableCell(&lTable, &lRow, &lCol, &bstrVaule);
+	CString strRet;
+	//didn't success
+	if(iRet != 0)
+		strRet = " ";
+	else
+		strRet = bstrVaule;
+	return T2A(strRet);
+}
+
+void CRBWCppDlg::GetToolData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta)
+{
+	*chtx = GetTableCellString(4, 1, 1);
+	*chty = GetTableCellString(4, 1, 2);
+	*chtz = GetTableCellString(4, 1, 3);
+	*chtc = GetTableCellString(4, 1, 4);
+	*chtb = GetTableCellString(4, 1, 5);
+	*chta = GetTableCellString(4, 1, 6);
+}
+
+void CRBWCppDlg::GetFrameData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta)
+{
+	*chtx = GetTableCellString(5, 1, 1);
+	*chty = GetTableCellString(5, 1, 2);
+	*chtz = GetTableCellString(5, 1, 3);
+	*chtc = GetTableCellString(5, 1, 4);
+	*chtb = GetTableCellString(5, 1, 5);
+	*chta = GetTableCellString(5, 1, 6);
 }

@@ -30,4 +30,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedGeneratetext();
+
+private:
+	CRBW65API m_rbwAPI;
+	char *GetTableCellString(long lTable, long lRow, long lCol);
+	void GetFrameData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta);
+	void GetToolData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta);
 };
