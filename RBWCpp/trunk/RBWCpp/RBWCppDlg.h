@@ -36,4 +36,7 @@ private:
 	char *GetTableCellString(long lTable, long lRow, long lCol);
 	void GetFrameData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta);
 	void GetToolData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta);
+	void GetCartesinaData(long lRow, char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta);
+	void GetEventsData(long lRow, char **ch1, char **ch2, char **ch3, char **ch4, char **ch5, char **ch6, 
+									char **ch7, char **ch8, char **ch9);
 };

@@ -252,7 +252,7 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		AfxMessageBox(_T("Can't create RobotWorks65.API object!"));
 		return;
 	}
-	
+	long lPntCnt = m_rbwAPI.Get_PointCount();
 	char chcomma = ',';
 	char *chline = "\r\n";
 	//write frame vaule
@@ -281,7 +281,77 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 	file.Write(chline, strlen(chline));
 	
 	//get tool data
-	GetToolData(&chx, &chy, &chz, &chc, &chb, &cha);
+	char *chtx = NULL;
+	char *chty = NULL;
+	char *chtz = NULL;
+	char *chtc = NULL;
+	char *chtb = NULL;
+	char *chta= NULL;
+	GetToolData(&chtx, &chty, &chtz, &chtc, &chtb, &chta);
+
+	char *chspace = " ";
+	for (long l = 1; l <= lPntCnt; l++)
+	{
+		//tool data
+		file.Write(chtx, strlen(chtx));
+		file.Write(&chcomma, 1);
+		file.Write(chty, strlen(chty));
+		file.Write(&chcomma, 1);
+		file.Write(chtz, strlen(chtz));
+		file.Write(&chcomma, 1);
+		file.Write(chtc, strlen(chtc));
+		file.Write(&chcomma, 1);
+		file.Write(chtb, strlen(chtb));
+		file.Write(&chcomma, 1);
+		file.Write(chta, strlen(chta));
+		file.Write(&chcomma, 1);
+		file.Write(chspace, strlen(chspace));
+
+		//cartesina data
+		GetCartesinaData(l, &chx, &chy, &chz, &chc, &chb, &cha);
+		file.Write(chx, strlen(chx));
+		file.Write(&chcomma, 1);
+		file.Write(chy, strlen(chy));
+		file.Write(&chcomma, 1);
+		file.Write(chz, strlen(chz));
+		file.Write(&chcomma, 1);
+		file.Write(chc, strlen(chc));
+		file.Write(&chcomma, 1);
+		file.Write(chb, strlen(chb));
+		file.Write(&chcomma, 1);
+		file.Write(cha, strlen(cha));
+		file.Write(&chcomma, 1);
+		file.Write(chspace, strlen(chspace));
+
+		//events data
+		char *che1 = NULL;
+		char *che2 = NULL;
+		char *che3 = NULL;
+		char *che4 = NULL;
+		char *che5 = NULL;
+		char *che6 = NULL;
+		char *che7 = NULL;
+		char *che8 = NULL;
+		char *che9 = NULL;
+		GetEventsData(l, &che1, &che2, &che3, &che4, &che5, &che6, &che7, &che8, &che9);
+		file.Write(che1, strlen(che1));
+		file.Write(&chcomma, 1);
+		file.Write(che2, strlen(che2));
+		file.Write(&chcomma, 1);
+		file.Write(che3, strlen(che3));
+		file.Write(&chcomma, 1);
+		file.Write(che4, strlen(che4));
+		file.Write(&chcomma, 1);
+		file.Write(che5, strlen(che5));
+		file.Write(&chcomma, 1);
+		file.Write(che6, strlen(che6));
+		file.Write(&chcomma, 1);
+		file.Write(che7, strlen(che7));
+		file.Write(&chcomma, 1);
+		file.Write(che8, strlen(che8));
+		file.Write(&chcomma, 1);
+		file.Write(che9, strlen(che9));
+	}
 	file.Close();
 }
 
@@ -317,4 +387,28 @@ void CRBWCppDlg::GetFrameData(char **chtx, char **chty, char **chtz, char **chtc
 	*chtc = GetTableCellString(5, 1, 4);
 	*chtb = GetTableCellString(5, 1, 5);
 	*chta = GetTableCellString(5, 1, 6);
+}
+
+void CRBWCppDlg::GetCartesinaData(long lRow, char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta)
+{
+	*chtx = GetTableCellString(0, lRow, 2);
+	*chty = GetTableCellString(0, lRow, 3);
+	*chtz = GetTableCellString(0, lRow, 4);
+	*chtc = GetTableCellString(0, lRow, 5);
+	*chtb = GetTableCellString(0, lRow, 6);
+	*chta = GetTableCellString(0, lRow, 7);
+}
+
+void CRBWCppDlg::GetEventsData(long lRow, char **ch1, char **ch2, char **ch3, char **ch4, char **ch5, char **ch6, 
+														char **ch7, char **ch8, char **ch9)
+{
+	*ch1 = GetTableCellString(3, lRow, 1);
+	*ch2 = GetTableCellString(3, lRow, 2);
+	*ch3 = GetTableCellString(3, lRow, 3);
+	*ch4 = GetTableCellString(3, lRow, 4);
+	*ch5 = GetTableCellString(3, lRow, 5);
+	*ch6 = GetTableCellString(3, lRow, 6);
+	*ch7 = GetTableCellString(3, lRow, 7);
+	*ch8 = GetTableCellString(3, lRow, 8);
+	*ch9 = GetTableCellString(3, lRow, 9);
 }
