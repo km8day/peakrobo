@@ -9,6 +9,7 @@
 #define new DEBUG_NEW
 #endif
 
+#define  CHAR_SIZE 256
 
 // CAboutDlg dialog used for App About
 
@@ -50,6 +51,7 @@ CRBWCppDlg::CRBWCppDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CRBWCppDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_bDispCreated = false;
 }
 
 void CRBWCppDlg::DoDataExchange(CDataExchange* pDX)
@@ -246,11 +248,15 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		return;
 	
 	// TODO: Add your control notification handler code here
-	BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
-	if(!b) 
+	if(!m_bDispCreated)
 	{
-		AfxMessageBox(_T("Can't create RobotWorks65.API object!"));
-		return;
+		BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
+		if(!b) 
+		{
+			AfxMessageBox(_T("Can't create RobotWorks65.API object!"));
+			return;
+		}
+		m_bDispCreated = true;
 	}
 	long lPntCnt = m_rbwAPI.Get_PointCount();
 	char chcomma = ',';
@@ -259,13 +265,13 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 	char ch[] = "FRAME VAULE= ";
 	file.Write(ch, strlen(ch));
 
-	char *chx = NULL;
-	char *chy = NULL;
-	char *chz = NULL;
-	char *chc = NULL;
-	char *chb = NULL;
-	char *cha= NULL;
-	GetFrameData(&chx, &chy, &chz, &chc, &chb, &cha);
+	char chx[CHAR_SIZE];
+	char chy[CHAR_SIZE];
+	char chz[CHAR_SIZE];
+	char chc[CHAR_SIZE];
+	char chb[CHAR_SIZE];
+	char cha[CHAR_SIZE];
+	GetFrameData(chx, chy, chz, chc, chb, cha);
 	file.Write(chx, strlen(chx));
 	file.Write(&chcomma, 1);
 	file.Write(chy, strlen(chy));
@@ -279,19 +285,18 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 	file.Write(cha, strlen(cha));
 	file.Write(chline, strlen(chline));
 	file.Write(chline, strlen(chline));
-	
-	//get tool data
-	char *chtx = NULL;
-	char *chty = NULL;
-	char *chtz = NULL;
-	char *chtc = NULL;
-	char *chtb = NULL;
-	char *chta= NULL;
-	GetToolData(&chtx, &chty, &chtz, &chtc, &chtb, &chta);
 
 	char *chspace = " ";
 	for (long l = 1; l <= lPntCnt; l++)
 	{
+		//get tool data
+		char *chtx = new char[CHAR_SIZE];
+		char *chty = new char[CHAR_SIZE];
+		char *chtz = new char[CHAR_SIZE];
+		char *chtc = new char[CHAR_SIZE];
+		char *chtb = new char[CHAR_SIZE];
+		char *chta= new char[CHAR_SIZE];
+		GetToolData(&chtx, &chty, &chtz, &chtc, &chtb, &chta);
 		//tool data
 		file.Write(chtx, strlen(chtx));
 		file.Write(&chcomma, 1);
@@ -308,7 +313,7 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		file.Write(chspace, strlen(chspace));
 
 		//cartesina data
-		GetCartesinaData(l, &chx, &chy, &chz, &chc, &chb, &cha);
+		GetCartesinaData(l, chx, chy, chz, chc, chb, cha);
 		file.Write(chx, strlen(chx));
 		file.Write(&chcomma, 1);
 		file.Write(chy, strlen(chy));
@@ -324,15 +329,15 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		file.Write(chspace, strlen(chspace));
 
 		//events data
-		char *che1 = NULL;
-		char *che2 = NULL;
-		char *che3 = NULL;
-		char *che4 = NULL;
-		char *che5 = NULL;
-		char *che6 = NULL;
-		char *che7 = NULL;
-		char *che8 = NULL;
-		char *che9 = NULL;
+		char *che1 = new char[CHAR_SIZE];
+		char *che2 = new char[CHAR_SIZE];
+		char *che3 = new char[CHAR_SIZE];
+		char *che4 = new char[CHAR_SIZE];
+		char *che5 = new char[CHAR_SIZE];
+		char *che6 = new char[CHAR_SIZE];
+		char *che7 = new char[CHAR_SIZE];
+		char *che8 = new char[CHAR_SIZE];
+		char *che9 = new char[CHAR_SIZE];
 		GetEventsData(l, &che1, &che2, &che3, &che4, &che5, &che6, &che7, &che8, &che9);
 		file.Write(che1, strlen(che1));
 		file.Write(&chcomma, 1);
@@ -351,6 +356,8 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		file.Write(che8, strlen(che8));
 		file.Write(&chcomma, 1);
 		file.Write(che9, strlen(che9));
+
+		file.Write(chline, strlen(chline));
 	}
 	file.Close();
 }
@@ -379,24 +386,24 @@ void CRBWCppDlg::GetToolData(char **chtx, char **chty, char **chtz, char **chtc,
 	*chta = GetTableCellString(4, 1, 6);
 }
 
-void CRBWCppDlg::GetFrameData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta)
+void CRBWCppDlg::GetFrameData(char *chtx, char *chty, char *chtz, char *chtc, char *chtb, char *chta)
 {
-	*chtx = GetTableCellString(5, 1, 1);
-	*chty = GetTableCellString(5, 1, 2);
-	*chtz = GetTableCellString(5, 1, 3);
-	*chtc = GetTableCellString(5, 1, 4);
-	*chtb = GetTableCellString(5, 1, 5);
-	*chta = GetTableCellString(5, 1, 6);
+	chtx = GetTableCellString(5, 1, 1);
+	chty = GetTableCellString(5, 1, 2);
+	chtz = GetTableCellString(5, 1, 3);
+	chtc = GetTableCellString(5, 1, 4);
+	chtb = GetTableCellString(5, 1, 5);
+	chta = GetTableCellString(5, 1, 6);
 }
 
-void CRBWCppDlg::GetCartesinaData(long lRow, char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta)
+void CRBWCppDlg::GetCartesinaData(long lRow, char *chtx, char *chty, char *chtz, char *chtc, char *chtb, char *chta)
 {
-	*chtx = GetTableCellString(0, lRow, 2);
-	*chty = GetTableCellString(0, lRow, 3);
-	*chtz = GetTableCellString(0, lRow, 4);
-	*chtc = GetTableCellString(0, lRow, 5);
-	*chtb = GetTableCellString(0, lRow, 6);
-	*chta = GetTableCellString(0, lRow, 7);
+	chtx = GetTableCellString(0, lRow, 2);
+	chty = GetTableCellString(0, lRow, 3);
+	chtz = GetTableCellString(0, lRow, 4);
+	chtc = GetTableCellString(0, lRow, 5);
+	chtb = GetTableCellString(0, lRow, 6);
+	chta = GetTableCellString(0, lRow, 7);
 }
 
 void CRBWCppDlg::GetEventsData(long lRow, char **ch1, char **ch2, char **ch3, char **ch4, char **ch5, char **ch6, 
