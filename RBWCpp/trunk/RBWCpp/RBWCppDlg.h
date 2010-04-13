@@ -3,6 +3,8 @@
 
 #pragma once
 #include "CRBW65API.h"
+#include "afxwin.h"
+#include "afxcmn.h"
 
 // CRBWCppDlg dialog
 class CRBWCppDlg : public CDialog
@@ -40,4 +42,7 @@ private:
 	void GetCartesinaData(long lRow, CString &chtx, CString &chty, CString &chtz, CString &chtc, CString &chtb, CString &chta);
 	void GetEventsData(long lRow, CString &ch1, CString &ch2, CString &ch3, CString &ch4, CString &ch5, CString &ch6, 
 									CString &ch7, CString &ch8, CString &ch9);
+public:
+	CButton m_button;
+	CProgressCtrl m_ProgressCtrl;
 };

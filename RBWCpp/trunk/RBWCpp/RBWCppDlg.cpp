@@ -60,6 +60,8 @@ CRBWCppDlg::CRBWCppDlg(CWnd* pParent /*=NULL*/)
 void CRBWCppDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_GenerateText, m_button);
+	DDX_Control(pDX, IDC_PROGRESS, m_ProgressCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CRBWCppDlg, CDialog)
@@ -250,6 +252,9 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		}
 		m_bDispCreated = true;
 	}
+	m_button.ShowWindow(SW_HIDE);
+	m_ProgressCtrl.ShowWindow(SW_SHOW);
+	m_ProgressCtrl.SetPos(0);
 
 	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
 							_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
@@ -336,7 +341,11 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		filewrite << STR_COMMA;
 		filewrite << stre9;
 		filewrite << STR_LINE;
+
+		m_ProgressCtrl.SetPos(l*100/lPntCnt);
 	}
+	m_button.ShowWindow(SW_SHOW);
+	m_ProgressCtrl.ShowWindow(SW_HIDE);
 }
 
 CString CRBWCppDlg::GetTableCellString(long lTable, long lRow, long lCol)

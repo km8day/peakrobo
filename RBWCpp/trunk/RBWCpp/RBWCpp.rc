@@ -107,7 +107,8 @@ CAPTION "RBWCpp"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Close",IDOK,219,169,50,14
-    PUSHBUTTON      "Generate laser card text",IDC_GenerateText,101,84,114,21
+    PUSHBUTTON      "Generate laser card text",IDC_GenerateText,100,83,114,21
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",NOT WS_VISIBLE | WS_BORDER,118,87,80,14
 END
 
 
