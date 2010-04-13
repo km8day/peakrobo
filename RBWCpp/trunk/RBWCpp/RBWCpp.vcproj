@@ -219,6 +219,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\textfile.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -247,6 +251,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\textfile.h"
 				>
 			</File>
 		</Filter>

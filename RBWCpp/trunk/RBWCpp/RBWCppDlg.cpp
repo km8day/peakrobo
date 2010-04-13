@@ -4,12 +4,15 @@
 #include "stdafx.h"
 #include "RBWCpp.h"
 #include "RBWCppDlg.h"
+#include "textfile.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-#define  CHAR_SIZE 256
+#define  STR_COMMA _T(",")
+#define  STR_LINE _T("\r\n")
+#define  STR_SPACE _T(" ")
 
 // CAboutDlg dialog used for App About
 
@@ -237,17 +240,6 @@ HCURSOR CRBWCppDlg::OnQueryDragIcon()
 
 void CRBWCppDlg::OnBnClickedGeneratetext()
 {
-	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
-							_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
-	if(filedlg.DoModal() != IDOK)
-		return;
-	CString strFullFileName = filedlg.GetPathName();
-	
-	CFile file;
-	if(!file.Open(strFullFileName, CFile::modeCreate|CFile::modeWrite))
-		return;
-	
-	// TODO: Add your control notification handler code here
 	if(!m_bDispCreated)
 	{
 		BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
@@ -258,111 +250,96 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		}
 		m_bDispCreated = true;
 	}
+
+	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
+							_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
+	if(filedlg.DoModal() != IDOK)
+		return;
+	CString strFullFileName = filedlg.GetPathName();
+	
+	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
+	// TODO: Add your control notification handler code here
+	
 	long lPntCnt = m_rbwAPI.Get_PointCount();
-	char chcomma = ',';
-	char *chline = "\r\n";
-	//write frame vaule
-	char ch[] = "FRAME VAULE= ";
-	file.Write(ch, strlen(ch));
+	filewrite << _T("FRAME VALUE= ");
 
-	char chx[CHAR_SIZE];
-	char chy[CHAR_SIZE];
-	char chz[CHAR_SIZE];
-	char chc[CHAR_SIZE];
-	char chb[CHAR_SIZE];
-	char cha[CHAR_SIZE];
-	GetFrameData(chx, chy, chz, chc, chb, cha);
-	file.Write(chx, strlen(chx));
-	file.Write(&chcomma, 1);
-	file.Write(chy, strlen(chy));
-	file.Write(&chcomma, 1);
-	file.Write(chz, strlen(chz));
-	file.Write(&chcomma, 1);
-	file.Write(chc, strlen(chc));
-	file.Write(&chcomma, 1);
-	file.Write(chb, strlen(chb));
-	file.Write(&chcomma, 1);
-	file.Write(cha, strlen(cha));
-	file.Write(chline, strlen(chline));
-	file.Write(chline, strlen(chline));
+	CString strfx, strfy, strfz, strfc, strfb, strfa;
+	GetFrameData(strfx, strfy, strfz, strfc, strfb, strfa);
+	filewrite << strfx;
+	filewrite << STR_COMMA;
+	filewrite << strfy;
+	filewrite << STR_COMMA;
+	filewrite << strfz;
+	filewrite << STR_COMMA;
+	filewrite << strfc;
+	filewrite << STR_COMMA;
+	filewrite << strfb;
+	filewrite << STR_COMMA;
+	filewrite << strfa;
+	filewrite << STR_LINE;
+	filewrite << STR_LINE;
 
-	char *chspace = " ";
+	CString strtx, strty, strtz, strtc, strtb, strta;
+	GetToolData(strtx, strty, strtz, strtc, strtb, strta);
 	for (long l = 1; l <= lPntCnt; l++)
 	{
-		//get tool data
-		char *chtx = new char[CHAR_SIZE];
-		char *chty = new char[CHAR_SIZE];
-		char *chtz = new char[CHAR_SIZE];
-		char *chtc = new char[CHAR_SIZE];
-		char *chtb = new char[CHAR_SIZE];
-		char *chta= new char[CHAR_SIZE];
-		GetToolData(&chtx, &chty, &chtz, &chtc, &chtb, &chta);
 		//tool data
-		file.Write(chtx, strlen(chtx));
-		file.Write(&chcomma, 1);
-		file.Write(chty, strlen(chty));
-		file.Write(&chcomma, 1);
-		file.Write(chtz, strlen(chtz));
-		file.Write(&chcomma, 1);
-		file.Write(chtc, strlen(chtc));
-		file.Write(&chcomma, 1);
-		file.Write(chtb, strlen(chtb));
-		file.Write(&chcomma, 1);
-		file.Write(chta, strlen(chta));
-		file.Write(&chcomma, 1);
-		file.Write(chspace, strlen(chspace));
+		filewrite << strtx;
+		filewrite << STR_COMMA;
+		filewrite << strty;
+		filewrite << STR_COMMA;
+		filewrite << strtz;
+		filewrite << STR_COMMA;
+		filewrite << strtc;
+		filewrite <<STR_COMMA;
+		filewrite << strtb;
+		filewrite << STR_COMMA;
+		filewrite << strta;
+		filewrite << STR_COMMA;
+		filewrite << STR_SPACE;
 
 		//cartesina data
-		GetCartesinaData(l, chx, chy, chz, chc, chb, cha);
-		file.Write(chx, strlen(chx));
-		file.Write(&chcomma, 1);
-		file.Write(chy, strlen(chy));
-		file.Write(&chcomma, 1);
-		file.Write(chz, strlen(chz));
-		file.Write(&chcomma, 1);
-		file.Write(chc, strlen(chc));
-		file.Write(&chcomma, 1);
-		file.Write(chb, strlen(chb));
-		file.Write(&chcomma, 1);
-		file.Write(cha, strlen(cha));
-		file.Write(&chcomma, 1);
-		file.Write(chspace, strlen(chspace));
+		CString strcx, strcy, strcz, strcc, strcb, strca;
+		GetCartesinaData(l, strcx, strcy, strcz, strcc, strcb, strca);
+		filewrite << strcx;
+		filewrite << STR_COMMA;
+		filewrite << strcy;
+		filewrite << STR_COMMA;
+		filewrite << strcz;
+		filewrite << STR_COMMA;
+		filewrite << strcc;
+		filewrite << STR_COMMA;
+		filewrite << strcb;
+		filewrite << STR_COMMA;
+		filewrite << strca;
+		filewrite << STR_COMMA;
+		filewrite << STR_SPACE;
 
 		//events data
-		char *che1 = new char[CHAR_SIZE];
-		char *che2 = new char[CHAR_SIZE];
-		char *che3 = new char[CHAR_SIZE];
-		char *che4 = new char[CHAR_SIZE];
-		char *che5 = new char[CHAR_SIZE];
-		char *che6 = new char[CHAR_SIZE];
-		char *che7 = new char[CHAR_SIZE];
-		char *che8 = new char[CHAR_SIZE];
-		char *che9 = new char[CHAR_SIZE];
-		GetEventsData(l, &che1, &che2, &che3, &che4, &che5, &che6, &che7, &che8, &che9);
-		file.Write(che1, strlen(che1));
-		file.Write(&chcomma, 1);
-		file.Write(che2, strlen(che2));
-		file.Write(&chcomma, 1);
-		file.Write(che3, strlen(che3));
-		file.Write(&chcomma, 1);
-		file.Write(che4, strlen(che4));
-		file.Write(&chcomma, 1);
-		file.Write(che5, strlen(che5));
-		file.Write(&chcomma, 1);
-		file.Write(che6, strlen(che6));
-		file.Write(&chcomma, 1);
-		file.Write(che7, strlen(che7));
-		file.Write(&chcomma, 1);
-		file.Write(che8, strlen(che8));
-		file.Write(&chcomma, 1);
-		file.Write(che9, strlen(che9));
-
-		file.Write(chline, strlen(chline));
+		CString stre1, stre2, stre3, stre4, stre5, stre6, stre7, stre8, stre9;
+		GetEventsData(l, stre1, stre2, stre3, stre4, stre5, stre6, stre7, stre8, stre9);
+		filewrite << stre1;
+		filewrite << STR_COMMA;
+		filewrite << stre2;
+		filewrite << STR_COMMA;
+		filewrite << stre3;
+		filewrite << STR_COMMA;
+		filewrite << stre4;
+		filewrite << STR_COMMA;
+		filewrite << stre5;
+		filewrite << STR_COMMA;
+		filewrite << stre6;
+		filewrite << STR_COMMA;
+		filewrite << stre7;
+		filewrite << STR_COMMA;
+		filewrite << stre8;
+		filewrite << STR_COMMA;
+		filewrite << stre9;
+		filewrite << STR_LINE;
 	}
-	file.Close();
 }
 
-char *CRBWCppDlg::GetTableCellString(long lTable, long lRow, long lCol)
+CString CRBWCppDlg::GetTableCellString(long lTable, long lRow, long lCol)
 {
 	USES_CONVERSION;
 	CComBSTR bstrVaule;
@@ -370,33 +347,36 @@ char *CRBWCppDlg::GetTableCellString(long lTable, long lRow, long lCol)
 	CString strRet;
 	//didn't success
 	if(iRet != 0)
-		strRet = " ";
+		strRet = _T(" ");
 	else
 		strRet = bstrVaule;
-	return T2A(strRet);
+	return strRet;
 }
 
-void CRBWCppDlg::GetToolData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta)
+void CRBWCppDlg::GetToolData(CString &chtx, CString &chty, CString &chtz, 
+													CString &chtc, CString &chtb, CString &chta)
 {
-	*chtx = GetTableCellString(4, 1, 1);
-	*chty = GetTableCellString(4, 1, 2);
-	*chtz = GetTableCellString(4, 1, 3);
-	*chtc = GetTableCellString(4, 1, 4);
-	*chtb = GetTableCellString(4, 1, 5);
-	*chta = GetTableCellString(4, 1, 6);
+	chtx = GetTableCellString(4, 1, 1);
+	chty = GetTableCellString(4, 1, 2);
+	chtz = GetTableCellString(4, 1, 3);
+	chtc = GetTableCellString(4, 1, 4);
+	chtb = GetTableCellString(4, 1, 5);
+	chta = GetTableCellString(4, 1, 6);
 }
 
-void CRBWCppDlg::GetFrameData(char *chtx, char *chty, char *chtz, char *chtc, char *chtb, char *chta)
+void CRBWCppDlg::GetFrameData(CString &chx, CString &chy, CString &chz, 
+													CString &chc, CString &chb, CString &cha)
 {
-	chtx = GetTableCellString(5, 1, 1);
-	chty = GetTableCellString(5, 1, 2);
-	chtz = GetTableCellString(5, 1, 3);
-	chtc = GetTableCellString(5, 1, 4);
-	chtb = GetTableCellString(5, 1, 5);
-	chta = GetTableCellString(5, 1, 6);
+	chx = GetTableCellString(5, 1, 1);
+	chy = GetTableCellString(5, 1, 2);
+	chz = GetTableCellString(5, 1, 3);
+	chc = GetTableCellString(5, 1, 4);
+	chb = GetTableCellString(5, 1, 5);
+	cha = GetTableCellString(5, 1, 6);
 }
 
-void CRBWCppDlg::GetCartesinaData(long lRow, char *chtx, char *chty, char *chtz, char *chtc, char *chtb, char *chta)
+void CRBWCppDlg::GetCartesinaData(long lRow, CString &chtx, CString &chty, 
+														CString &chtz, CString &chtc, CString &chtb, CString &chta)
 {
 	chtx = GetTableCellString(0, lRow, 2);
 	chty = GetTableCellString(0, lRow, 3);
@@ -406,16 +386,17 @@ void CRBWCppDlg::GetCartesinaData(long lRow, char *chtx, char *chty, char *chtz,
 	chta = GetTableCellString(0, lRow, 7);
 }
 
-void CRBWCppDlg::GetEventsData(long lRow, char **ch1, char **ch2, char **ch3, char **ch4, char **ch5, char **ch6, 
-														char **ch7, char **ch8, char **ch9)
+void CRBWCppDlg::GetEventsData(long lRow, CString &ch1, CString &ch2, CString &ch3, 
+														CString &ch4, CString &ch5, CString &ch6, 
+														CString &ch7, CString &ch8, CString &ch9)
 {
-	*ch1 = GetTableCellString(3, lRow, 1);
-	*ch2 = GetTableCellString(3, lRow, 2);
-	*ch3 = GetTableCellString(3, lRow, 3);
-	*ch4 = GetTableCellString(3, lRow, 4);
-	*ch5 = GetTableCellString(3, lRow, 5);
-	*ch6 = GetTableCellString(3, lRow, 6);
-	*ch7 = GetTableCellString(3, lRow, 7);
-	*ch8 = GetTableCellString(3, lRow, 8);
-	*ch9 = GetTableCellString(3, lRow, 9);
+	ch1 = GetTableCellString(3, lRow, 1);
+	ch2 = GetTableCellString(3, lRow, 2);
+	ch3 = GetTableCellString(3, lRow, 3);
+	ch4 = GetTableCellString(3, lRow, 4);
+	ch5 = GetTableCellString(3, lRow, 5);
+	ch6 = GetTableCellString(3, lRow, 6);
+	ch7 = GetTableCellString(3, lRow, 7);
+	ch8 = GetTableCellString(3, lRow, 8);
+	ch9 = GetTableCellString(3, lRow, 9);
 }

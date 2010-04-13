@@ -34,10 +34,10 @@ public:
 private:
 	CRBW65API m_rbwAPI;
 	bool m_bDispCreated;
-	char *GetTableCellString(long lTable, long lRow, long lCol);
-	void GetFrameData(char *chtx, char *chty, char *chtz, char *chtc, char *chtb, char *chta);
-	void GetToolData(char **chtx, char **chty, char **chtz, char **chtc, char **chtb, char **chta);
-	void GetCartesinaData(long lRow, char *chtx, char *chty, char *chtz, char *chtc, char *chtb, char *chta);
-	void GetEventsData(long lRow, char **ch1, char **ch2, char **ch3, char **ch4, char **ch5, char **ch6, 
-									char **ch7, char **ch8, char **ch9);
+	CString GetTableCellString(long lTable, long lRow, long lCol);
+	void GetFrameData(CString &chx, CString &chy, CString &chz, CString &chc, CString &chb, CString &cha);
+	void GetToolData(CString &chtx, CString &chty, CString &chtz, CString &chtc, CString &chtb, CString &chta);
+	void GetCartesinaData(long lRow, CString &chtx, CString &chty, CString &chtz, CString &chtc, CString &chtb, CString &chta);
+	void GetEventsData(long lRow, CString &ch1, CString &ch2, CString &ch3, CString &ch4, CString &ch5, CString &ch6, 
+									CString &ch7, CString &ch8, CString &ch9);
 };
