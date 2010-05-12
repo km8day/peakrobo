@@ -71,6 +71,13 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\RBWCpp.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP_STUBLI       BITMAP                  "res\\Staubli.bmp"
 #endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -100,15 +107,16 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
 END
 
-IDD_RBWCPP_DIALOG DIALOGEX 0, 0, 320, 200
+IDD_RBWCPP_DIALOG DIALOGEX 0, 0, 402, 252
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "RBWCpp"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Close",IDOK,219,169,50,14
-    PUSHBUTTON      "Generate laser card text",IDC_GenerateText,100,83,114,21
-    CONTROL         "",IDC_PROGRESS,"msctls_progress32",NOT WS_VISIBLE | WS_BORDER,118,87,80,14
+    DEFPUSHBUTTON   "Close",IDOK,239,167,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Generate laser card text",IDC_GenerateText,71,158,114,21,NOT WS_VISIBLE
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",NOT WS_VISIBLE | WS_BORDER,205,138,80,14
+    CONTROL         131,IDC_PICTURE_STUBLI,"Static",SS_BITMAP | SS_CENTERIMAGE,20,15,218,223
 END
 
 
@@ -170,9 +178,9 @@ BEGIN
     IDD_RBWCPP_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 313
+        RIGHTMARGIN, 395
         TOPMARGIN, 7
-        BOTTOMMARGIN, 193
+        BOTTOMMARGIN, 245
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -275,6 +275,10 @@
 				RelativePath=".\res\RBWCpp.rc2"
 				>
 			</File>
+			<File
+				RelativePath=".\res\Staubli.bmp"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
