@@ -45,4 +45,5 @@ private:
 public:
 	CButton m_button;
 	CProgressCtrl m_ProgressCtrl;
+	afx_msg void OnBnClickedButtonAbout();
 };

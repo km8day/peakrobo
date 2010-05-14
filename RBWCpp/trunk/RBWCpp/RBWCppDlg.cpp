@@ -60,8 +60,8 @@ CRBWCppDlg::CRBWCppDlg(CWnd* pParent /*=NULL*/)
 void CRBWCppDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_GenerateText, m_button);
-	DDX_Control(pDX, IDC_PROGRESS, m_ProgressCtrl);
+	//DDX_Control(pDX, IDC_GenerateText, m_button);
+	//DDX_Control(pDX, IDC_PROGRESS, m_ProgressCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CRBWCppDlg, CDialog)
@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(CRBWCppDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_GenerateText, &CRBWCppDlg::OnBnClickedGeneratetext)
+	ON_BN_CLICKED(IDC_BUTTON_ABOUT, &CRBWCppDlg::OnBnClickedButtonAbout)
 END_MESSAGE_MAP()
 
 
@@ -408,4 +409,10 @@ void CRBWCppDlg::GetEventsData(long lRow, CString &ch1, CString &ch2, CString &c
 	ch7 = GetTableCellString(3, lRow, 7);
 	ch8 = GetTableCellString(3, lRow, 8);
 	ch9 = GetTableCellString(3, lRow, 9);
+}
+void CRBWCppDlg::OnBnClickedButtonAbout()
+{
+	// TODO: Add your control notification handler code here
+	CAboutDlg dlg;
+	dlg.DoModal();
 }
