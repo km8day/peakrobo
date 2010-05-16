@@ -42,8 +42,12 @@ private:
 	void GetCartesinaData(long lRow, CString &chtx, CString &chty, CString &chtz, CString &chtc, CString &chtb, CString &chta);
 	void GetEventsData(long lRow, CString &ch1, CString &ch2, CString &ch3, CString &ch4, CString &ch5, CString &ch6, 
 									CString &ch7, CString &ch8, CString &ch9);
+	void GetPointProcessType(long lRow, CString &strProcessType);
+
 public:
 	CButton m_button;
 	CProgressCtrl m_ProgressCtrl;
 	afx_msg void OnBnClickedButtonAbout();
+	afx_msg void OnBnClickedButtonJoint();
+	afx_msg void OnBnClickedButtonTcp();
 };

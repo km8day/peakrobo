@@ -5,6 +5,7 @@
 #include "RBWCpp.h"
 #include "RBWCppDlg.h"
 #include "textfile.h"
+#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -45,6 +46,22 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 
+class RobotPathObject 
+{
+
+public:
+	RobotPathObject(long lStartIndex, long lEndIndex)
+	{
+		m_lStartIndex = lStartIndex;
+		m_lEndIndex = lEndIndex;
+	}
+
+private:
+	long m_lStartIndex;
+	long m_lEndIndex;
+};
+
+
 // CRBWCppDlg dialog
 
 
@@ -71,6 +88,8 @@ BEGIN_MESSAGE_MAP(CRBWCppDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_GenerateText, &CRBWCppDlg::OnBnClickedGeneratetext)
 	ON_BN_CLICKED(IDC_BUTTON_ABOUT, &CRBWCppDlg::OnBnClickedButtonAbout)
+	ON_BN_CLICKED(IDC_BUTTON_JOINT, &CRBWCppDlg::OnBnClickedButtonJoint)
+	ON_BN_CLICKED(IDC_BUTTON_TCP, &CRBWCppDlg::OnBnClickedButtonTcp)
 END_MESSAGE_MAP()
 
 
@@ -188,6 +207,17 @@ BOOL CRBWCppDlg::OnInitDialog()
 	//		int a = 1;
 	//	}
 	//}
+
+	if(!m_bDispCreated)
+	{
+		BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
+		if(!b) 
+		{
+			AfxMessageBox(_T("Can't create RobotWorks65.API object!"));
+			return FALSE;
+		}
+		m_bDispCreated = true;
+	}
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -410,9 +440,59 @@ void CRBWCppDlg::GetEventsData(long lRow, CString &ch1, CString &ch2, CString &c
 	ch8 = GetTableCellString(3, lRow, 8);
 	ch9 = GetTableCellString(3, lRow, 9);
 }
+
+void CRBWCppDlg::GetPointProcessType(long lRow, CString &strProcessType)
+{
+	strProcessType = GetTableCellString(2, lRow, 10);
+}
+
 void CRBWCppDlg::OnBnClickedButtonAbout()
 {
 	// TODO: Add your control notification handler code here
 	CAboutDlg dlg;
 	dlg.DoModal();
+}
+
+void CRBWCppDlg::OnBnClickedButtonJoint()
+{
+	// TODO: Add your control notification handler code here
+	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
+		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
+	if(filedlg.DoModal() != IDOK)
+		return;
+	CString strFullFileName = filedlg.GetPathName();
+
+	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
+
+	std::vector<class RobotPathObject> vPaths;
+	std::vector<long> vStartIndexes;
+	std::vector<long> vEndIndexes;
+	long lCount = m_rbwAPI.Get_PointCount();
+	for (long l = 2; l <= lCount; l++)
+	{
+		CString strProcessType;
+		GetPointProcessType(l, strProcessType);
+		if(strProcessType.CompareNoCase(_T("Start Process")) == 0)
+			vStartIndexes.push_back(l);
+		if(strProcessType.CompareNoCase(_T("End Process")) == 0)
+			vEndIndexes.push_back(l);
+	}
+	ASSERT(vStartIndexes.size() == vEndIndexes.size());
+
+	for (size_t i = 0; i < vStartIndexes.size(); i++)
+	{
+		vPaths.push_back(RobotPathObject(vStartIndexes[i], vEndIndexes[i]));
+	}
+}
+
+void CRBWCppDlg::OnBnClickedButtonTcp()
+{
+	// TODO: Add your control notification handler code here
+	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
+		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
+	if(filedlg.DoModal() != IDOK)
+		return;
+	CString strFullFileName = filedlg.GetPathName();
+
+	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
 }
