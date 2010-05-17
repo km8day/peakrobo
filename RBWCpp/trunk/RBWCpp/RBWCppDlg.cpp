@@ -4,8 +4,6 @@
 #include "stdafx.h"
 #include "RBWCpp.h"
 #include "RBWCppDlg.h"
-#include "textfile.h"
-#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -14,6 +12,7 @@
 #define  STR_COMMA _T(",")
 #define  STR_LINE _T("\r\n")
 #define  STR_SPACE _T(" ")
+#define  TOTALELEMENTS _T("TOTALELEMENTS=")
 
 // CAboutDlg dialog used for App About
 
@@ -45,21 +44,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-
-class RobotPathObject 
-{
-
-public:
-	RobotPathObject(long lStartIndex, long lEndIndex)
-	{
-		m_lStartIndex = lStartIndex;
-		m_lEndIndex = lEndIndex;
-	}
-
-private:
-	long m_lStartIndex;
-	long m_lEndIndex;
-};
 
 
 // CRBWCppDlg dialog
@@ -441,6 +425,17 @@ void CRBWCppDlg::GetEventsData(long lRow, CString &ch1, CString &ch2, CString &c
 	ch9 = GetTableCellString(3, lRow, 9);
 }
 
+void CRBWCppDlg::GetJointData(long lRow, CString &strA1, CString &strA2, 
+				  CString &strA3, CString &strA4, CString &strA5, CString &strA6)
+{
+	strA1 = GetTableCellString(1, lRow, 1);
+	strA2 = GetTableCellString(1, lRow, 2);
+	strA3 = GetTableCellString(1, lRow, 3);
+	strA4 = GetTableCellString(1, lRow, 4);
+	strA5 = GetTableCellString(1, lRow, 5);
+	strA6 = GetTableCellString(1, lRow, 6);
+}
+
 void CRBWCppDlg::GetPointProcessType(long lRow, CString &strProcessType)
 {
 	strProcessType = GetTableCellString(2, lRow, 10);
@@ -456,7 +451,7 @@ void CRBWCppDlg::OnBnClickedButtonAbout()
 void CRBWCppDlg::OnBnClickedButtonJoint()
 {
 	// TODO: Add your control notification handler code here
-	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
+	CFileDialog filedlg(FALSE, _T("txt"), _T("JT6.txt"), OFN_OVERWRITEPROMPT, 
 		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
 	if(filedlg.DoModal() != IDOK)
 		return;
@@ -464,7 +459,36 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 
 	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
 
-	std::vector<class RobotPathObject> vPaths;
+	std::vector<RobotPathObject> vPaths;
+	GetRobotPaths(vPaths);
+
+	CString strElementCount;
+	strElementCount.Format(_T("%d"), vPaths.size());
+	CString strTotalElements = TOTALELEMENTS + strElementCount;
+	//write total elements
+	filewrite << strTotalElements;
+	filewrite << STR_LINE;
+
+	WriteToolData(filewrite);
+	WriteFrameData(filewrite);
+	WriteHomeData(filewrite);
+	filewrite << STR_LINE;
+}
+
+void CRBWCppDlg::OnBnClickedButtonTcp()
+{
+	// TODO: Add your control notification handler code here
+	CFileDialog filedlg(FALSE, _T("txt"), _T("TCP.txt"), OFN_OVERWRITEPROMPT, 
+		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
+	if(filedlg.DoModal() != IDOK)
+		return;
+	CString strFullFileName = filedlg.GetPathName();
+
+	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
+}
+
+void CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
+{
 	std::vector<long> vStartIndexes;
 	std::vector<long> vEndIndexes;
 	long lCount = m_rbwAPI.Get_PointCount();
@@ -483,16 +507,66 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 	{
 		vPaths.push_back(RobotPathObject(vStartIndexes[i], vEndIndexes[i]));
 	}
+	return;
 }
 
-void CRBWCppDlg::OnBnClickedButtonTcp()
+void CRBWCppDlg::WriteToolData(CTextFileWrite filewrite)
 {
-	// TODO: Add your control notification handler code here
-	CFileDialog filedlg(FALSE, _T("txt"), _T("1.txt"), OFN_OVERWRITEPROMPT, 
-		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
-	if(filedlg.DoModal() != IDOK)
-		return;
-	CString strFullFileName = filedlg.GetPathName();
+	CString strtx, strty, strtz, strtc, strtb, strta;
+	GetToolData(strtx, strty, strtz, strtc, strtb, strta);
+	//write tool data
+	filewrite << _T("TCP=");
+	filewrite << strtx;
+	filewrite << STR_COMMA;
+	filewrite << strty;
+	filewrite << STR_COMMA;
+	filewrite << strtz;
+	filewrite << STR_COMMA;
+	filewrite << strtc;
+	filewrite <<STR_COMMA;
+	filewrite << strtb;
+	filewrite << STR_COMMA;
+	filewrite << strta;
+	filewrite << STR_LINE;
+	return;
+}
 
-	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
+void CRBWCppDlg::WriteFrameData(CTextFileWrite filewrite)
+{
+	CString strfx, strfy, strfz, strfc, strfb, strfa;
+	GetFrameData(strfx, strfy, strfz, strfc, strfb, strfa);
+	filewrite << _T("FRAME=");
+	filewrite << strfx;
+	filewrite << STR_COMMA;
+	filewrite << strfy;
+	filewrite << STR_COMMA;
+	filewrite << strfz;
+	filewrite << STR_COMMA;
+	filewrite << strfc;
+	filewrite << STR_COMMA;
+	filewrite << strfb;
+	filewrite << STR_COMMA;
+	filewrite << strfa;
+	filewrite << STR_LINE;
+	return;
+}
+
+void CRBWCppDlg::WriteHomeData(CTextFileWrite filewrite)
+{
+	//the first point's joint data
+	CString strA1, strA2, strA3, strA4, strA5, strA6;
+	GetJointData(1, strA1, strA2, strA3, strA4, strA5, strA6);
+	filewrite << _T("HOME=");
+	filewrite << strA1;
+	filewrite << STR_COMMA;
+	filewrite << strA2;
+	filewrite << STR_COMMA;
+	filewrite << strA3;
+	filewrite << STR_COMMA;
+	filewrite << strA4;
+	filewrite << STR_COMMA;
+	filewrite << strA5;
+	filewrite << STR_COMMA;
+	filewrite << strA6;
+	filewrite << STR_LINE;
 }
