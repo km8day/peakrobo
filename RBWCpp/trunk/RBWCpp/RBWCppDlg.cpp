@@ -10,7 +10,6 @@
 #endif
 
 #define  STR_COMMA _T(",")
-#define  STR_LINE _T("\r\n")
 #define  STR_SPACE _T(" ")
 #define  TOTALELEMENTS _T("TOTALELEMENTS=")
 
@@ -296,8 +295,8 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 	filewrite << strfb;
 	filewrite << STR_COMMA;
 	filewrite << strfa;
-	filewrite << STR_LINE;
-	filewrite << STR_LINE;
+	filewrite.WriteEndl();
+	filewrite.WriteEndl();
 
 	CString strtx, strty, strtz, strtc, strtb, strta;
 	GetToolData(strtx, strty, strtz, strtc, strtb, strta);
@@ -355,7 +354,7 @@ void CRBWCppDlg::OnBnClickedGeneratetext()
 		filewrite << stre8;
 		filewrite << STR_COMMA;
 		filewrite << stre9;
-		filewrite << STR_LINE;
+		filewrite.WriteEndl();
 
 		m_ProgressCtrl.SetPos(l*100/lPntCnt);
 	}
@@ -450,6 +449,20 @@ void CRBWCppDlg::OnBnClickedButtonAbout()
 
 void CRBWCppDlg::OnBnClickedButtonJoint()
 {
+	CString strType;
+	GetPointProcessType(1, strType);
+	if(strType.Find(_T("Landing")) == -1)
+	{
+		AfxMessageBox(_T("The first point's process type should be Landing"));
+		return;
+	}
+	GetPointProcessType(2, strType);
+	if(strType.Find(_T("Start")) == -1)
+	{
+		AfxMessageBox(_T("The second point's process type should be Start Process"));
+		return;
+	}
+
 	// TODO: Add your control notification handler code here
 	CFileDialog filedlg(FALSE, _T("txt"), _T("JT6.txt"), OFN_OVERWRITEPROMPT, 
 		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
@@ -458,7 +471,7 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 	CString strFullFileName = filedlg.GetPathName();
 
 	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
-
+	
 	std::vector<RobotPathObject> vPaths;
 	GetRobotPaths(vPaths);
 
@@ -467,12 +480,82 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 	CString strTotalElements = TOTALELEMENTS + strElementCount;
 	//write total elements
 	filewrite << strTotalElements;
-	filewrite << STR_LINE;
+	filewrite.WriteEndl();
 
 	WriteToolData(filewrite);
 	WriteFrameData(filewrite);
 	WriteHomeData(filewrite);
-	filewrite << STR_LINE;
+	filewrite.WriteEndl();
+	filewrite.WriteEndl();
+	filewrite.WriteEndl();
+
+	for (size_t i = 1; i <= vPaths.size(); i++)
+	{
+		CString strElement;
+		strElement.Format(_T("%d"), i);
+		filewrite << _T("ELEMENT") + strElement + _T("=BEGIN");
+		filewrite.WriteEndl();
+		
+		long lStartIndex = vPaths[i-1].GetStartIndex();
+		long lEndIndex = vPaths[i-1].GetEndIndex();
+		//get start speed value
+		CString strSpeed;
+		GetEventData(lStartIndex, 2, strSpeed);
+		filewrite << _T("SPEED=") + strSpeed;
+		filewrite.WriteEndl();
+
+		//get start blend value
+		CString strBlend;
+		GetEventData(lStartIndex, 3, strBlend);
+		filewrite << _T("BLEND=") + strBlend;
+		filewrite.WriteEndl();
+
+		//get start BYPASS value
+		CString strBypass;
+		GetEventData(lStartIndex, 4, strBypass);
+		filewrite << _T("BYPASS=") + strBypass;
+		filewrite.WriteEndl();
+
+		//get start process point joint data
+		filewrite << _T("MOVEJ=");
+		WriteJointData(lStartIndex, filewrite);
+
+		//get start CAUTION data
+		//CString strCutAction;
+		//GetEventData(lStartIndex, 5, strCutAction);
+		filewrite << _T("CUTACTION=ON");
+		filewrite.WriteEndl();
+
+		//get start DELAYON data
+		CString strDelay;
+		GetEventData(lStartIndex, 6, strDelay);
+		filewrite << _T("DELAYON=") + strDelay;
+		filewrite.WriteEndl();
+
+		//write in process point joints data
+		for (long l = lStartIndex+1; l <= lEndIndex; l++)
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(l, filewrite);
+		}
+
+		//get end point CUTACTION
+		//GetEventData(lEndIndex, 5, strCutAction);
+		filewrite << _T("CUTACTION=OFF");
+		filewrite.WriteEndl();
+
+		//get end point delay data
+		GetEventData(lEndIndex, 6, strDelay);
+		filewrite << _T("DELAYOFF=") + strDelay;
+
+		//write In Air data
+		filewrite << _T("MOVEJ=");
+		WriteJointData(lEndIndex + 1, filewrite);
+		filewrite << _T("MOVEJ=");
+		WriteJointData(lEndIndex + 2, filewrite);
+
+		filewrite << _T("ELEMENT") + strElement + _T("=END");
+	}
 }
 
 void CRBWCppDlg::OnBnClickedButtonTcp()
@@ -527,7 +610,7 @@ void CRBWCppDlg::WriteToolData(CTextFileWrite filewrite)
 	filewrite << strtb;
 	filewrite << STR_COMMA;
 	filewrite << strta;
-	filewrite << STR_LINE;
+	filewrite.WriteEndl();
 	return;
 }
 
@@ -547,16 +630,21 @@ void CRBWCppDlg::WriteFrameData(CTextFileWrite filewrite)
 	filewrite << strfb;
 	filewrite << STR_COMMA;
 	filewrite << strfa;
-	filewrite << STR_LINE;
+	filewrite.WriteEndl();
 	return;
 }
 
 void CRBWCppDlg::WriteHomeData(CTextFileWrite filewrite)
 {
 	//the first point's joint data
-	CString strA1, strA2, strA3, strA4, strA5, strA6;
-	GetJointData(1, strA1, strA2, strA3, strA4, strA5, strA6);
 	filewrite << _T("HOME=");
+	WriteJointData(1, filewrite);
+}
+
+void CRBWCppDlg::WriteJointData(long lRow, CTextFileWrite filewrite)
+{
+	CString strA1, strA2, strA3, strA4, strA5, strA6;
+	GetJointData(lRow, strA1, strA2, strA3, strA4, strA5, strA6);
 	filewrite << strA1;
 	filewrite << STR_COMMA;
 	filewrite << strA2;
@@ -568,5 +656,10 @@ void CRBWCppDlg::WriteHomeData(CTextFileWrite filewrite)
 	filewrite << strA5;
 	filewrite << STR_COMMA;
 	filewrite << strA6;
-	filewrite << STR_LINE;
+	filewrite.WriteEndl();	
+}
+
+void CRBWCppDlg::GetEventData(long lRow, long lColumn, CString &strVaule)
+{
+	strVaule = GetTableCellString(3, lRow, lColumn);
 }

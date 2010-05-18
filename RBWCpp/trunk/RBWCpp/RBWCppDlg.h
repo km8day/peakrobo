@@ -18,6 +18,16 @@ public:
 		m_lEndIndex = lEndIndex;
 	}
 
+	long GetStartIndex()
+	{
+		return m_lStartIndex;
+	}
+
+	long GetEndIndex()
+	{
+		return m_lEndIndex;
+	}
+
 private:
 	long m_lStartIndex;
 	long m_lEndIndex;
@@ -65,11 +75,13 @@ private:
 	void GetEventsData(long lRow, CString &ch1, CString &ch2, 
 									CString &ch3, CString &ch4, CString &ch5, CString &ch6, 
 									CString &ch7, CString &ch8, CString &ch9);
+	void GetEventData(long lRow, long lColumn, CString &strVaule);
 	void GetPointProcessType(long lRow, CString &strProcessType);
 	void GetRobotPaths(std::vector<RobotPathObject> &vPathes);
 	void WriteToolData(CTextFileWrite filewrite);
 	void WriteFrameData(CTextFileWrite filewrite);
 	void WriteHomeData(CTextFileWrite filewrite);
+	void WriteJointData(long lRow, CTextFileWrite filewrite);
 
 public:
 	CButton m_button;
