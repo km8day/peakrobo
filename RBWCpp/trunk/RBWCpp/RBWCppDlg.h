@@ -78,10 +78,10 @@ private:
 	void GetEventData(long lRow, long lColumn, CString &strVaule);
 	void GetPointProcessType(long lRow, CString &strProcessType);
 	void GetRobotPaths(std::vector<RobotPathObject> &vPathes);
-	void WriteToolData(CTextFileWrite filewrite);
-	void WriteFrameData(CTextFileWrite filewrite);
-	void WriteHomeData(CTextFileWrite filewrite);
-	void WriteJointData(long lRow, CTextFileWrite filewrite);
+	void WriteToolData(CTextFileWrite& filewrite);
+	void WriteFrameData(CTextFileWrite& filewrite);
+	void WriteHomeData(CTextFileWrite& filewrite);
+	void WriteJointData(long lRow, CTextFileWrite& filewrite);
 
 public:
 	CButton m_button;

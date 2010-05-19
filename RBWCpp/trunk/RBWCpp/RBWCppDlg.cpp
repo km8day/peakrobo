@@ -517,8 +517,18 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 		filewrite.WriteEndl();
 
 		//get start process point joint data
-		filewrite << _T("MOVEJ=");
-		WriteJointData(lStartIndex, filewrite);
+		if(i == 1)
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lStartIndex, filewrite);
+		}
+		else
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lStartIndex - 2, filewrite);
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lStartIndex - 1, filewrite);
+		}
 
 		//get start CAUTION data
 		//CString strCutAction;
@@ -547,14 +557,25 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 		//get end point delay data
 		GetEventData(lEndIndex, 6, strDelay);
 		filewrite << _T("DELAYOFF=") + strDelay;
+		filewrite.WriteEndl();
 
 		//write In Air data
-		filewrite << _T("MOVEJ=");
-		WriteJointData(lEndIndex + 1, filewrite);
-		filewrite << _T("MOVEJ=");
-		WriteJointData(lEndIndex + 2, filewrite);
+		if(i == vPaths.size())
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lEndIndex + 1, filewrite);
+		}
+		else
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lEndIndex + 1, filewrite);
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lEndIndex + 2, filewrite);
+		}
 
 		filewrite << _T("ELEMENT") + strElement + _T("=END");
+		filewrite.WriteEndl();
+		filewrite.WriteEndl();
 	}
 }
 
@@ -593,7 +614,7 @@ void CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
 	return;
 }
 
-void CRBWCppDlg::WriteToolData(CTextFileWrite filewrite)
+void CRBWCppDlg::WriteToolData(CTextFileWrite& filewrite)
 {
 	CString strtx, strty, strtz, strtc, strtb, strta;
 	GetToolData(strtx, strty, strtz, strtc, strtb, strta);
@@ -614,7 +635,7 @@ void CRBWCppDlg::WriteToolData(CTextFileWrite filewrite)
 	return;
 }
 
-void CRBWCppDlg::WriteFrameData(CTextFileWrite filewrite)
+void CRBWCppDlg::WriteFrameData(CTextFileWrite& filewrite)
 {
 	CString strfx, strfy, strfz, strfc, strfb, strfa;
 	GetFrameData(strfx, strfy, strfz, strfc, strfb, strfa);
@@ -634,14 +655,14 @@ void CRBWCppDlg::WriteFrameData(CTextFileWrite filewrite)
 	return;
 }
 
-void CRBWCppDlg::WriteHomeData(CTextFileWrite filewrite)
+void CRBWCppDlg::WriteHomeData(CTextFileWrite& filewrite)
 {
 	//the first point's joint data
 	filewrite << _T("HOME=");
 	WriteJointData(1, filewrite);
 }
 
-void CRBWCppDlg::WriteJointData(long lRow, CTextFileWrite filewrite)
+void CRBWCppDlg::WriteJointData(long lRow, CTextFileWrite& filewrite)
 {
 	CString strA1, strA2, strA3, strA4, strA5, strA6;
 	GetJointData(lRow, strA1, strA2, strA3, strA4, strA5, strA6);
