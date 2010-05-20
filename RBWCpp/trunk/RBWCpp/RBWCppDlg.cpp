@@ -370,7 +370,7 @@ CString CRBWCppDlg::GetTableCellString(long lTable, long lRow, long lCol)
 	CString strRet;
 	//didn't success
 	if(iRet != 0)
-		strRet = _T(" ");
+		strRet = _T("");
 	else
 		strRet = bstrVaule;
 	return strRet;
@@ -449,20 +449,8 @@ void CRBWCppDlg::OnBnClickedButtonAbout()
 
 void CRBWCppDlg::OnBnClickedButtonJoint()
 {
-	CString strType;
-	GetPointProcessType(1, strType);
-	if(strType.Find(_T("Landing")) == -1)
-	{
-		AfxMessageBox(_T("The first point's process type should be Landing"));
-		return;
-	}
-	GetPointProcessType(2, strType);
-	if(strType.Find(_T("Start")) == -1)
-	{
-		AfxMessageBox(_T("The second point's process type should be Start Process"));
-		return;
-	}
-
+	if(!DoPreCheck()) return;
+	
 	// TODO: Add your control notification handler code here
 	CFileDialog filedlg(FALSE, _T("txt"), _T("JT6.txt"), OFN_OVERWRITEPROMPT, 
 		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
@@ -475,19 +463,7 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 	std::vector<RobotPathObject> vPaths;
 	GetRobotPaths(vPaths);
 
-	CString strElementCount;
-	strElementCount.Format(_T("%d"), vPaths.size());
-	CString strTotalElements = TOTALELEMENTS + strElementCount;
-	//write total elements
-	filewrite << strTotalElements;
-	filewrite.WriteEndl();
-
-	WriteToolData(filewrite);
-	WriteFrameData(filewrite);
-	WriteHomeData(filewrite);
-	filewrite.WriteEndl();
-	filewrite.WriteEndl();
-	filewrite.WriteEndl();
+	WriteFirstSection(filewrite, vPaths.size());
 
 	for (size_t i = 1; i <= vPaths.size(); i++)
 	{
@@ -581,6 +557,8 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 
 void CRBWCppDlg::OnBnClickedButtonTcp()
 {
+	if(!DoPreCheck()) return;
+
 	// TODO: Add your control notification handler code here
 	CFileDialog filedlg(FALSE, _T("txt"), _T("TCP.txt"), OFN_OVERWRITEPROMPT, 
 		_T("Text Files(*.txt)\0*.txt\0All File(*.*)\0*.*"), NULL);
@@ -589,9 +567,97 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 	CString strFullFileName = filedlg.GetPathName();
 
 	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
+
+	std::vector<RobotPathObject> vPaths;
+	GetRobotPaths(vPaths);
+
+	WriteFirstSection(filewrite, vPaths.size());
+
+	for (size_t i = 1; i <= vPaths.size(); i++)
+	{
+		CString strElement;
+		strElement.Format(_T("%d"), i);
+		filewrite << _T("ELEMENT") + strElement + _T("=BEGIN");
+		filewrite.WriteEndl();
+
+		long lStartIndex = vPaths[i-1].GetStartIndex();
+		long lEndIndex = vPaths[i-1].GetEndIndex();
+		//get start speed value
+		CString strSpeed;
+		GetEventData(lStartIndex, 2, strSpeed);
+		filewrite << _T("SPEED=") + strSpeed;
+		filewrite.WriteEndl();
+
+		//get start blend value
+		CString strBlend;
+		GetEventData(lStartIndex, 3, strBlend);
+		filewrite << _T("BLEND=") + strBlend;
+		filewrite.WriteEndl();
+
+		//get start BYPASS value
+		CString strBypass;
+		GetEventData(lStartIndex, 4, strBypass);
+		filewrite << _T("BYPASS=") + strBypass;
+		filewrite.WriteEndl();
+
+		//get start process point joint data
+		if(i == 1)
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lStartIndex, filewrite);
+		}
+		else
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lStartIndex - 2, filewrite);
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lStartIndex - 1, filewrite);
+		}		
+
+		filewrite << _T("CUTACTION=ON");
+		filewrite.WriteEndl();
+
+		//get start DELAYON data
+		CString strDelay;
+		GetEventData(lStartIndex, 6, strDelay);
+		filewrite << _T("DELAYON=") + strDelay;
+		filewrite.WriteEndl();
+
+		//write in process point joints data
+		for (long l = lStartIndex+1; l <= lEndIndex; l++)
+		{
+			filewrite << _T("MOVEO=");
+			WriteCartesianData(l, filewrite);
+		}
+		filewrite << _T("CUTACTION=OFF");
+		filewrite.WriteEndl();
+
+		//get end point delay data
+		GetEventData(lEndIndex, 6, strDelay);
+		filewrite << _T("DELAYOFF=") + strDelay;
+		filewrite.WriteEndl();
+
+		//write In Air data
+		if(i == vPaths.size())
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lEndIndex + 1, filewrite);
+		}
+		else
+		{
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lEndIndex + 1, filewrite);
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lEndIndex + 2, filewrite);
+		}
+
+		filewrite << _T("ELEMENT") + strElement + _T("=END");
+		filewrite.WriteEndl();
+		filewrite.WriteEndl();
+	}
 }
 
-void CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
+bool CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
 {
 	std::vector<long> vStartIndexes;
 	std::vector<long> vEndIndexes;
@@ -605,13 +671,20 @@ void CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
 		if(strProcessType.CompareNoCase(_T("End Process")) == 0)
 			vEndIndexes.push_back(l);
 	}
-	ASSERT(vStartIndexes.size() == vEndIndexes.size());
+
+	if(vStartIndexes.empty() || vEndIndexes.empty())
+		return false;
+	if(vStartIndexes.size() != vEndIndexes.size())
+	{
+		AfxMessageBox(_T("Start Process points count is not equal to End Process points count"));
+		return false;
+	}
 
 	for (size_t i = 0; i < vStartIndexes.size(); i++)
 	{
 		vPaths.push_back(RobotPathObject(vStartIndexes[i], vEndIndexes[i]));
 	}
-	return;
+	return true;
 }
 
 void CRBWCppDlg::WriteToolData(CTextFileWrite& filewrite)
@@ -680,7 +753,74 @@ void CRBWCppDlg::WriteJointData(long lRow, CTextFileWrite& filewrite)
 	filewrite.WriteEndl();	
 }
 
+void CRBWCppDlg::WriteCartesianData(long lRow, CTextFileWrite& filewrite)
+{
+	CString strcx, strcy, strcz, strcc, strcb, strca;
+	GetCartesinaData(lRow, strcx, strcy, strcz, strcc, strcb, strca);	
+	filewrite << strcx;
+	filewrite << STR_COMMA;
+	filewrite << strcy;
+	filewrite << STR_COMMA;
+	filewrite << strcz;
+	filewrite << STR_COMMA;
+	filewrite << strcc;
+	filewrite << STR_COMMA;
+	filewrite << strcb;
+	filewrite << STR_COMMA;
+	filewrite << strca;
+	filewrite.WriteEndl();	
+}
+
 void CRBWCppDlg::GetEventData(long lRow, long lColumn, CString &strVaule)
 {
 	strVaule = GetTableCellString(3, lRow, lColumn);
+}
+
+void CRBWCppDlg::GetJointDataA1(long lRow, CString &strA1)
+{
+	strA1 = GetTableCellString(1, lRow, 1);
+}
+
+bool CRBWCppDlg::DoPreCheck()
+{
+	CString strVaule = _T("");
+	GetJointDataA1(1, strVaule);
+	if (strVaule.IsEmpty())
+	{
+		AfxMessageBox(_T("Please execute Convert to Robot firstly"));
+		return false;
+	}
+	CString strType = _T("");
+	GetPointProcessType(1, strType);
+	if(strType.Find(_T("Landing")) == -1)
+	{
+		AfxMessageBox(_T("The first point's process type should be Landing"));
+		return false;
+	}
+	GetPointProcessType(2, strType);
+	if(strType.Find(_T("Start")) == -1)
+	{
+		AfxMessageBox(_T("The second point's process type should be Start Process"));
+		return false;
+	}
+
+	return true;
+}
+
+void CRBWCppDlg::WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt)
+{
+	CString strElementCount;
+	strElementCount.Format(_T("%d"), lPathsCnt);
+	CString strTotalElements = TOTALELEMENTS + strElementCount;
+	//write total elements
+	filewrite << strTotalElements;
+	filewrite.WriteEndl();
+
+	WriteToolData(filewrite);
+	WriteFrameData(filewrite);
+	WriteHomeData(filewrite);
+	filewrite.WriteEndl();
+	filewrite.WriteEndl();
+	filewrite.WriteEndl();
+	return;
 }

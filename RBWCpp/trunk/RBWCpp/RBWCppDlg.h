@@ -72,16 +72,20 @@ private:
 									CString &chtz, CString &chtc, CString &chtb, CString &chta);
 	void GetJointData(long lRow, CString &strA1, CString &strA2, 
 								CString &strA3, CString &strA4, CString &strA5, CString &strA6);
+	void GetJointDataA1(long lRow, CString &strA1);
 	void GetEventsData(long lRow, CString &ch1, CString &ch2, 
 									CString &ch3, CString &ch4, CString &ch5, CString &ch6, 
 									CString &ch7, CString &ch8, CString &ch9);
 	void GetEventData(long lRow, long lColumn, CString &strVaule);
 	void GetPointProcessType(long lRow, CString &strProcessType);
-	void GetRobotPaths(std::vector<RobotPathObject> &vPathes);
+	bool GetRobotPaths(std::vector<RobotPathObject> &vPathes);
 	void WriteToolData(CTextFileWrite& filewrite);
 	void WriteFrameData(CTextFileWrite& filewrite);
 	void WriteHomeData(CTextFileWrite& filewrite);
 	void WriteJointData(long lRow, CTextFileWrite& filewrite);
+	void WriteCartesianData(long lRow, CTextFileWrite& filewrite);
+	bool DoPreCheck();
+	void WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt);
 
 public:
 	CButton m_button;
