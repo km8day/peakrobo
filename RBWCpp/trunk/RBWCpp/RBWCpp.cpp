@@ -96,7 +96,7 @@ BOOL CRBWCppApp::InitInstance()
 	info = NULL;
 	if(!bRBW65Runing)
 	{
-		AfxMessageBox(_T("RobotWorks65 is not running!"));
+		AfxMessageBox(_T("RobotWorks65.exe is not running!"));
 		return FALSE;
 	}
 

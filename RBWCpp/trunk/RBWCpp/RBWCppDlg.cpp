@@ -461,7 +461,8 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
 	
 	std::vector<RobotPathObject> vPaths;
-	GetRobotPaths(vPaths);
+	if(!GetRobotPaths(vPaths))
+		return;
 
 	WriteFirstSection(filewrite, vPaths.size());
 
@@ -553,6 +554,8 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 		filewrite.WriteEndl();
 		filewrite.WriteEndl();
 	}
+
+	AfxMessageBox(_T("JOINT data output successed"));
 }
 
 void CRBWCppDlg::OnBnClickedButtonTcp()
@@ -569,7 +572,8 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 	CTextFileWrite filewrite(strFullFileName, CTextFileWrite::UTF_8);
 
 	std::vector<RobotPathObject> vPaths;
-	GetRobotPaths(vPaths);
+	if(!GetRobotPaths(vPaths))
+		return;
 
 	WriteFirstSection(filewrite, vPaths.size());
 
@@ -655,6 +659,8 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 		filewrite.WriteEndl();
 		filewrite.WriteEndl();
 	}
+
+	AfxMessageBox(_T("TCP data output successed"));
 }
 
 bool CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
@@ -671,9 +677,18 @@ bool CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
 		if(strProcessType.CompareNoCase(_T("End Process")) == 0)
 			vEndIndexes.push_back(l);
 	}
-
-	if(vStartIndexes.empty() || vEndIndexes.empty())
+	
+	if(vStartIndexes.empty())
+	{
+		AfxMessageBox(_T("Didn't find any Start Process point"));
 		return false;
+	}
+	if(vEndIndexes.empty())
+	{
+		AfxMessageBox(_T("Didn't find any End Process point"));
+		return false;
+	}
+
 	if(vStartIndexes.size() != vEndIndexes.size())
 	{
 		AfxMessageBox(_T("Start Process points count is not equal to End Process points count"));
@@ -684,6 +699,7 @@ bool CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
 	{
 		vPaths.push_back(RobotPathObject(vStartIndexes[i], vEndIndexes[i]));
 	}
+
 	return true;
 }
 
