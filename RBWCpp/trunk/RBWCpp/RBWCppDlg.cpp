@@ -630,7 +630,7 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 		//write in process point joints data
 		for (long l = lStartIndex+1; l <= lEndIndex; l++)
 		{
-			filewrite << _T("MOVEO=");
+			filewrite << _T("MOVETO=");
 			WriteCartesianData(l, filewrite);
 		}
 		filewrite << _T("CUTACTION=OFF");
