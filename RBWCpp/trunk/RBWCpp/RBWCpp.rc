@@ -149,7 +149,7 @@ BEGIN
             VALUE "FileDescription", "Stoke Robot-Laser Data Exchange System"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "RBWCpp.exe"
-            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "LegalCopyright", "Copyright(C) 2008-2010 Trustsoft Co., Ltd.  All rights reserved."
             VALUE "OriginalFilename", "RBWCpp.exe"
             VALUE "ProductName", "Stoke Robot-Laser Data Exchange.exe"
             VALUE "ProductVersion", "1.0.0.1"
