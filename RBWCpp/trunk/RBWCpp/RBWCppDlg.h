@@ -86,6 +86,7 @@ private:
 	void WriteCartesianData(long lRow, CTextFileWrite& filewrite);
 	bool DoPreCheck();
 	void WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt);
+	bool IsRBWRunning();
 
 public:
 	CButton m_button;

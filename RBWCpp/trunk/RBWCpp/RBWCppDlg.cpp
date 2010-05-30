@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "RBWCpp.h"
 #include "RBWCppDlg.h"
+#include <tlhelp32.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,6 +13,8 @@
 #define  STR_COMMA _T(",")
 #define  STR_SPACE _T(" ")
 #define  TOTALELEMENTS _T("TOTALELEMENTS=")
+
+#define  RBW65EXE  _T("RobotWorks65.exe")
 
 // CAboutDlg dialog used for App About
 
@@ -105,6 +108,17 @@ BOOL CRBWCppDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
+	if(!m_bDispCreated)
+	{
+		BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
+		if(!b) 
+		{
+			AfxMessageBox(_T("Can't create RobotWorks65.API object!"));
+			return FALSE;
+		}
+		m_bDispCreated = true;
+	}
+
 	// TODO: Add extra initialization here
 	//CRBWAPI rbwAPI;
 	//BOOL b = rbwAPI.CreateDispatch(_T("RobotWorks500.API"));
@@ -191,16 +205,6 @@ BOOL CRBWCppDlg::OnInitDialog()
 	//	}
 	//}
 
-	if(!m_bDispCreated)
-	{
-		BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
-		if(!b) 
-		{
-			AfxMessageBox(_T("Can't create RobotWorks65.API object!"));
-			return FALSE;
-		}
-		m_bDispCreated = true;
-	}
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -839,4 +843,44 @@ void CRBWCppDlg::WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt)
 	filewrite.WriteEndl();
 	filewrite.WriteEndl();
 	return;
+}
+
+bool CRBWCppDlg::IsRBWRunning()
+{
+
+	//check if RobotWorks65.exe is running
+	HANDLE handle=CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
+
+	PROCESSENTRY32* info=new PROCESSENTRY32;
+	info->dwSize=sizeof(PROCESSENTRY32);
+	bool bRBW65Runing = false;
+	if(Process32First(handle,info))
+	{
+		if(GetLastError()==ERROR_NO_MORE_FILES )
+		{
+			bRBW65Runing = false;
+		}
+		else
+		{
+			CString strProcessExe = info->szExeFile;
+			//strProcessExe.Format("%s",info->szExeFile);
+			if(strProcessExe.CompareNoCase(RBW65EXE) == 0 )
+				bRBW65Runing = true;
+
+			while(Process32Next(handle,info)!=FALSE && !bRBW65Runing)
+			{
+				strProcessExe = info->szExeFile;
+				//strProcessExe.Format("%s",info->szExeFile);
+				if(strProcessExe.CompareNoCase(RBW65EXE) == 0)
+				{
+					bRBW65Runing = true;
+					break;
+				}
+			}
+		}
+	}
+	CloseHandle(handle);
+	delete info;
+	info = NULL;
+	return bRBW65Runing;
 }
