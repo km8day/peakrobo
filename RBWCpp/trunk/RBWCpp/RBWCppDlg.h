@@ -6,6 +6,7 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 #include <vector>
+#include <map>
 #include "textfile.h"
 
 class RobotPathObject 
@@ -87,6 +88,7 @@ private:
 	bool DoPreCheck();
 	void WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt);
 	bool IsRBWRunning();
+	void GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap);
 
 public:
 	CButton m_button;

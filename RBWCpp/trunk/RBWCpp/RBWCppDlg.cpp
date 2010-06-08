@@ -884,3 +884,8 @@ bool CRBWCppDlg::IsRBWRunning()
 	info = NULL;
 	return bRBW65Runing;
 }
+
+void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap)
+{
+
+}
