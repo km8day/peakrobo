@@ -64,6 +64,9 @@ public:
 private:
 	CRBW65API m_rbwAPI;
 	bool m_bDispCreated;
+	int m_iCurrentOutType; // 1 means Joint output, 2 means TCP output
+	long m_lLandingIndex;
+	long m_lTakeoffIndex;
 	CString GetTableCellString(long lTable, long lRow, long lCol);
 	void GetFrameData(CString &chx, CString &chy, CString &chz, 
 									CString &chc, CString &chb, CString &cha);

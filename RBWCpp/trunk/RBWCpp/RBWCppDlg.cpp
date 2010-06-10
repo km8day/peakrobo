@@ -14,6 +14,18 @@
 #define  STR_SPACE _T(" ")
 #define  TOTALELEMENTS _T("TOTALELEMENTS=")
 
+#define MOTION_TYPE _T("MOTION")
+#define SPEED _T("SPEED")
+#define BLEND _T("BLEND")
+#define BYPASS _T("BYPASS")
+#define GOSUB _T("GOSUB")
+#define LASER _T("LASER")
+#define DELAY _T("DELAY")
+#define SLDAX_DIS _T("SLDAX DISTANCE")
+#define PROCESS_INDEX _T("PROCESS INDEX")
+#define A1 _T("A1")
+#define A2 _T("A2")
+
 #define  RBW65EXE  _T("RobotWorks65.exe")
 
 // CAboutDlg dialog used for App About
@@ -453,6 +465,7 @@ void CRBWCppDlg::OnBnClickedButtonAbout()
 
 void CRBWCppDlg::OnBnClickedButtonJoint()
 {
+	m_iCurrentOutType = 1;
 	if(!DoPreCheck()) return;
 	
 	// TODO: Add your control notification handler code here
@@ -564,6 +577,7 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 
 void CRBWCppDlg::OnBnClickedButtonTcp()
 {
+	m_iCurrentOutType = 2;
 	if(!DoPreCheck()) return;
 
 	// TODO: Add your control notification handler code here
@@ -672,7 +686,7 @@ bool CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
 	std::vector<long> vStartIndexes;
 	std::vector<long> vEndIndexes;
 	long lCount = m_rbwAPI.Get_PointCount();
-	for (long l = 2; l <= lCount; l++)
+	for (long l = m_lLandingIndex; l <= lCount; l++)
 	{
 		CString strProcessType;
 		GetPointProcessType(l, strProcessType);
@@ -752,7 +766,7 @@ void CRBWCppDlg::WriteHomeData(CTextFileWrite& filewrite)
 {
 	//the first point's joint data
 	filewrite << _T("HOME=");
-	WriteJointData(1, filewrite);
+	WriteJointData(m_lLandingIndex, filewrite);
 }
 
 void CRBWCppDlg::WriteJointData(long lRow, CTextFileWrite& filewrite)
@@ -803,6 +817,9 @@ void CRBWCppDlg::GetJointDataA1(long lRow, CString &strA1)
 
 bool CRBWCppDlg::DoPreCheck()
 {
+	m_lLandingIndex = -1;
+	m_lTakeoffIndex = -1;
+
 	CString strVaule = _T("");
 	GetJointDataA1(1, strVaule);
 	if (strVaule.IsEmpty())
@@ -810,17 +827,41 @@ bool CRBWCppDlg::DoPreCheck()
 		AfxMessageBox(_T("Please execute Convert to Robot firstly"));
 		return false;
 	}
-	CString strType = _T("");
-	GetPointProcessType(1, strType);
-	if(strType.Find(_T("Landing")) == -1)
+
+	bool bFindLandingPnt = false;
+	long lPntCount = m_rbwAPI.Get_PointCount();
+	for (long i = 1; i <= lPntCount; i++)
 	{
-		AfxMessageBox(_T("The first point's process type should be Landing"));
+		CString strType = _T("");
+		GetPointProcessType(i, strType);
+		if(strType.Find(_T("Landing")) != -1) //find it
+		{
+			bFindLandingPnt = true;
+			m_lLandingIndex = i;
+			break;
+		}
+	}
+	if(!bFindLandingPnt)
+	{
+		AfxMessageBox(_T("Did not find the Landing point!"));
 		return false;
 	}
-	GetPointProcessType(2, strType);
-	if(strType.Find(_T("Start")) == -1)
+
+	bool bFindTakeoffPnt = false;
+	for (long i = lPntCount; i >= 1; i--)
 	{
-		AfxMessageBox(_T("The second point's process type should be Start Process"));
+		CString strType = _T("");
+		GetPointProcessType(i, strType);
+		if(strType.Find(_T("Takeoff")) != -1) //find it
+		{
+			bFindTakeoffPnt = true;
+			m_lTakeoffIndex = i;
+			break;
+		}
+	}
+	if(!bFindTakeoffPnt)
+	{
+		AfxMessageBox(_T("Did not find the Takeoff point!"));
 		return false;
 	}
 
@@ -887,5 +928,80 @@ bool CRBWCppDlg::IsRBWRunning()
 
 void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap)
 {
+	CString strMotion;
+	GetEventData(lRow, 1, strMotion);
+	if(strMotion.IsEmpty() == 0)
+	{
+		eventsvaluemap[MOTION_TYPE] = strMotion;
+	}
 
+	CString strSpeed;
+	GetEventData(lRow, 2, strSpeed);
+	if (strSpeed.IsEmpty() == 0)
+	{
+		eventsvaluemap[SPEED] = strSpeed;
+	}
+
+	CString strBlend;
+	GetEventData(lRow, 3, strBlend);
+	if (strBlend.IsEmpty() == 0)
+	{
+		eventsvaluemap[BLEND] = strBlend;
+	}
+
+	CString strBypass;
+	GetEventData(lRow, 4, strBypass);
+	if (strBypass.IsEmpty() == 0)
+	{
+		eventsvaluemap[BYPASS] = strBypass;
+	}
+
+	CString strGoSub;
+	GetEventData(lRow, 5, strGoSub);
+	if (strGoSub.IsEmpty() == 0)
+	{
+		eventsvaluemap[GOSUB] = strGoSub;
+	}
+
+	CString strLaser;
+	GetEventData(lRow, 6, strLaser);
+	if (strLaser.IsEmpty() == 0)
+	{
+		eventsvaluemap[LASER] = strLaser;
+	}
+
+	CString strDelay;
+	GetEventData(lRow, 7, strDelay);
+	if (strDelay.IsEmpty() == 0)
+	{
+		eventsvaluemap[DELAY] = strDelay;
+	}
+
+	CString strSldax;
+	GetEventData(lRow, 8, strSldax);
+	if (strSldax.IsEmpty() == 0)
+	{
+		eventsvaluemap[SLDAX_DIS] = strSldax;
+	}
+
+	CString strProcess;
+	GetEventData(lRow, 9, strProcess);
+	if (strProcess.IsEmpty() == 0)
+	{
+		eventsvaluemap[PROCESS_INDEX] = strProcess;
+	}
+
+	CString strA1;
+	GetEventData(lRow, 10, strA1);
+	if (strA1.IsEmpty() == 0)
+	{
+		eventsvaluemap[A1] = strA1;
+	}
+
+	CString strA2;
+	GetEventData(lRow, 11, strA2);
+	if (strA2.IsEmpty() == 0)
+	{
+		eventsvaluemap[A2] = strA2;
+	}
 }
