@@ -91,7 +91,9 @@ private:
 	bool DoPreCheck();
 	void WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt);
 	bool IsRBWRunning();
-	void GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap);
+	void GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap,
+											bool bIncludeMotion = false);
+	void WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite);
 
 public:
 	CButton m_button;

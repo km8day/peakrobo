@@ -492,85 +492,43 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 		
 		long lStartIndex = vPaths[i-1].GetStartIndex();
 		long lEndIndex = vPaths[i-1].GetEndIndex();
-		//get start speed value
-		CString strSpeed;
-		GetEventData(lStartIndex, 2, strSpeed);
-		filewrite << _T("SPEED=") + strSpeed;
-		filewrite.WriteEndl();
 
-		//get start blend value
-		CString strBlend;
-		GetEventData(lStartIndex, 3, strBlend);
-		filewrite << _T("BLEND=") + strBlend;
-		filewrite.WriteEndl();
-
-		//get start BYPASS value
-		CString strBypass;
-		GetEventData(lStartIndex, 4, strBypass);
-		filewrite << _T("BYPASS=") + strBypass;
-		filewrite.WriteEndl();
-
-		//get start process point joint data
-		if(i == 1)
+		if(i == 1)//for the first path, output all the points before start point
 		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lStartIndex, filewrite);
+			for (int j = m_lLandingIndex + 1; j < lStartIndex; j++)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(j, filewrite);
+				WritePointStaubliEvents(j, filewrite);
+			}
 		}
 		else
 		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lStartIndex - 2, filewrite);
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lStartIndex - 1, filewrite);
+			long lLastEndIndex = vPaths[i-2].GetEndIndex();
+			for(int j = lLastEndIndex + 3; j < lStartIndex; j++)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(j, filewrite);
+				WritePointStaubliEvents(j, filewrite);
+			}
 		}
 
-		//get start CAUTION data
-		//CString strCutAction;
-		//GetEventData(lStartIndex, 5, strCutAction);
-		filewrite << _T("CUTACTION=ON");
-		filewrite.WriteEndl();
-
-		//get start DELAYON data
-		CString strDelay;
-		GetEventData(lStartIndex, 6, strDelay);
-		filewrite << _T("DELAYON=") + strDelay;
-		filewrite.WriteEndl();
-
-		//write in process point joints data
-		for (long l = lStartIndex+1; l <= lEndIndex; l++)
+		for (int j = lStartIndex; j <= lEndIndex + 2; j++)
 		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(l, filewrite);
-		}
+			if(j >= m_lTakeoffIndex) break;
 
-		//get end point CUTACTION
-		//GetEventData(lEndIndex, 5, strCutAction);
-		filewrite << _T("CUTACTION=OFF");
-		filewrite.WriteEndl();
-
-		//get end point delay data
-		GetEventData(lEndIndex, 6, strDelay);
-		filewrite << _T("DELAYOFF=") + strDelay;
-		filewrite.WriteEndl();
-
-		//write In Air data
-		if(i == vPaths.size())
-		{
 			filewrite << _T("MOVEJ=");
-			WriteJointData(lEndIndex + 1, filewrite);
-		}
-		else
-		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lEndIndex + 1, filewrite);
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lEndIndex + 2, filewrite);
+			WriteJointData(j, filewrite);
+			WritePointStaubliEvents(j, filewrite);
 		}
 
 		filewrite << _T("ELEMENT") + strElement + _T("=END");
 		filewrite.WriteEndl();
 		filewrite.WriteEndl();
 	}
+
+	filewrite << _T("MOVEJ=");
+	WriteJointData(m_lTakeoffIndex, filewrite);
 
 	AfxMessageBox(_T("JOINT data output successed"));
 }
@@ -604,6 +562,20 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 
 		long lStartIndex = vPaths[i-1].GetStartIndex();
 		long lEndIndex = vPaths[i-1].GetEndIndex();
+
+		if(i == 1)
+		{
+			for (int j = m_lLandingIndex + 1; j <= lStartIndex - 2; j++)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(j, filewrite);
+				WritePointStaubliEvents(j, filewrite);
+			}
+		}
+		else
+		{
+
+		}
 		//get start speed value
 		CString strSpeed;
 		GetEventData(lStartIndex, 2, strSpeed);
@@ -852,7 +824,7 @@ bool CRBWCppDlg::DoPreCheck()
 	{
 		CString strType = _T("");
 		GetPointProcessType(i, strType);
-		if(strType.Find(_T("Takeoff")) != -1) //find it
+		if(strType.Find(_T("Take Off")) != -1) //find it
 		{
 			bFindTakeoffPnt = true;
 			m_lTakeoffIndex = i;
@@ -926,13 +898,18 @@ bool CRBWCppDlg::IsRBWRunning()
 	return bRBW65Runing;
 }
 
-void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap)
+void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap,
+																bool bIncludeMotion)
 {
-	CString strMotion;
-	GetEventData(lRow, 1, strMotion);
-	if(strMotion.IsEmpty() == 0)
+	eventsvaluemap.clear();
+	if(bIncludeMotion)
 	{
-		eventsvaluemap[MOTION_TYPE] = strMotion;
+		CString strMotion;
+		GetEventData(lRow, 1, strMotion);
+		if(strMotion.IsEmpty() == 0)
+		{
+			eventsvaluemap[MOTION_TYPE] = strMotion;
+		}
 	}
 
 	CString strSpeed;
@@ -1003,5 +980,19 @@ void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &ev
 	if (strA2.IsEmpty() == 0)
 	{
 		eventsvaluemap[A2] = strA2;
+	}
+}
+
+void CRBWCppDlg::WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite)
+{
+	std::map<CString, CString> eventsmap;
+	GetPointStaubliEvents(lRow, eventsmap);
+	std::map<CString, CString>::iterator iter;
+	for (iter = eventsmap.begin(); iter != eventsmap.end(); iter++)
+	{
+		filewrite << iter->first;
+		filewrite << _T("=");
+		filewrite << iter->second;
+		filewrite.WriteEndl();
 	}
 }
