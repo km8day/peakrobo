@@ -87,13 +87,14 @@ private:
 	void WriteFrameData(CTextFileWrite& filewrite);
 	void WriteHomeData(CTextFileWrite& filewrite);
 	void WriteJointData(long lRow, CTextFileWrite& filewrite);
-	void WriteCartesianData(long lRow, CTextFileWrite& filewrite);
+	void WriteCartesianData(long lRow, CTextFileWrite& filewrite, bool bWriteEndl = true);
 	bool DoPreCheck();
 	void WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt);
 	bool IsRBWRunning();
 	void GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap,
 											bool bIncludeMotion = false);
 	void WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite);
+	void GetMotionType(long lRow, CString& strMotion);
 
 public:
 	CButton m_button;

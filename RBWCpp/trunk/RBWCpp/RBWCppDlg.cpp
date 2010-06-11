@@ -495,7 +495,7 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 
 		if(i == 1)//for the first path, output all the points before start point
 		{
-			for (int j = m_lLandingIndex + 1; j < lStartIndex; j++)
+			for (long j = m_lLandingIndex + 1; j < lStartIndex; j++)
 			{
 				filewrite << _T("MOVEJ=");
 				WriteJointData(j, filewrite);
@@ -505,7 +505,7 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 		else
 		{
 			long lLastEndIndex = vPaths[i-2].GetEndIndex();
-			for(int j = lLastEndIndex + 3; j < lStartIndex; j++)
+			for(long j = lLastEndIndex + 3; j < lStartIndex; j++)
 			{
 				filewrite << _T("MOVEJ=");
 				WriteJointData(j, filewrite);
@@ -513,13 +513,25 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 			}
 		}
 
-		for (int j = lStartIndex; j <= lEndIndex + 2; j++)
+		for (long j = lStartIndex; j <= lEndIndex + 2; j++)
 		{
 			if(j >= m_lTakeoffIndex) break;
 
 			filewrite << _T("MOVEJ=");
 			WriteJointData(j, filewrite);
 			WritePointStaubliEvents(j, filewrite);
+		}
+		if(i == vPaths.size())
+		{
+			if(lEndIndex + 3 < m_lTakeoffIndex)
+			{
+				for (long l = lEndIndex + 3; lEndIndex < m_lTakeoffIndex; l++)
+				{
+					filewrite << _T("MOVEJ=");
+					WriteJointData(l, filewrite);
+					WritePointStaubliEvents(l, filewrite);
+				}
+			}
 		}
 
 		filewrite << _T("ELEMENT") + strElement + _T("=END");
@@ -565,7 +577,7 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 
 		if(i == 1)
 		{
-			for (int j = m_lLandingIndex + 1; j <= lStartIndex - 2; j++)
+			for (long j = m_lLandingIndex + 1; j <= lStartIndex - 2; j++)
 			{
 				filewrite << _T("MOVEJ=");
 				WriteJointData(j, filewrite);
@@ -574,81 +586,72 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 		}
 		else
 		{
-
+			long lLastEndIndex = vPaths[i-2].GetEndIndex();	
+			for(long j = lLastEndIndex + 3; j < lStartIndex - 1; j++)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(j, filewrite);
+				WritePointStaubliEvents(j, filewrite);
+			}
 		}
-		//get start speed value
-		CString strSpeed;
-		GetEventData(lStartIndex, 2, strSpeed);
-		filewrite << _T("SPEED=") + strSpeed;
-		filewrite.WriteEndl();
 
-		//get start blend value
-		CString strBlend;
-		GetEventData(lStartIndex, 3, strBlend);
-		filewrite << _T("BLEND=") + strBlend;
-		filewrite.WriteEndl();
-
-		//get start BYPASS value
-		CString strBypass;
-		GetEventData(lStartIndex, 4, strBypass);
-		filewrite << _T("BYPASS=") + strBypass;
-		filewrite.WriteEndl();
-
-		//get start process point joint data
-		if(i == 1)
+		for (long j = lStartIndex - 1; j <= lEndIndex + 1; j++)
 		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lStartIndex, filewrite);
+			if(j >= m_lTakeoffIndex) break;
+
+			CString strMotion;
+			GetMotionType(j, strMotion);
+			if(strMotion.CompareNoCase(_T("MOVEC")) == 0)
+			{
+				filewrite << _T("MOVEC=");
+				CString strMotion2;
+				GetMotionType(j+1, strMotion2);
+				if(strMotion2.CompareNoCase(_T("MOVEC")) == 0)
+				{
+					WriteCartesianData(j, filewrite, false);
+					filewrite << _T("/");
+					WriteCartesianData(j+1, filewrite);
+					j++;
+				}
+				else
+					WriteCartesianData(j, filewrite);
+			}
+			else
+			{
+				filewrite << _T("MOVEL=");
+				WriteCartesianData(j, filewrite);
+			}
+			WritePointStaubliEvents(j, filewrite);
 		}
-		else
-		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lStartIndex - 2, filewrite);
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lStartIndex - 1, filewrite);
-		}		
-
-		filewrite << _T("CUTACTION=ON");
-		filewrite.WriteEndl();
-
-		//get start DELAYON data
-		CString strDelay;
-		GetEventData(lStartIndex, 6, strDelay);
-		filewrite << _T("DELAYON=") + strDelay;
-		filewrite.WriteEndl();
-
-		//write in process point joints data
-		for (long l = lStartIndex+1; l <= lEndIndex; l++)
-		{
-			filewrite << _T("MOVETO=");
-			WriteCartesianData(l, filewrite);
-		}
-		filewrite << _T("CUTACTION=OFF");
-		filewrite.WriteEndl();
-
-		//get end point delay data
-		GetEventData(lEndIndex, 6, strDelay);
-		filewrite << _T("DELAYOFF=") + strDelay;
-		filewrite.WriteEndl();
-
-		//write In Air data
+		
 		if(i == vPaths.size())
 		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lEndIndex + 1, filewrite);
+			if(lEndIndex + 2 < m_lTakeoffIndex)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(lEndIndex+2, filewrite);
+				WritePointStaubliEvents(lEndIndex+2, filewrite);
+			}
+			for (long l = lEndIndex + 3; l < m_lTakeoffIndex; l++)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(l, filewrite);
+				WritePointStaubliEvents(l, filewrite);
+			}
 		}
 		else
 		{
 			filewrite << _T("MOVEJ=");
-			WriteJointData(lEndIndex + 1, filewrite);
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lEndIndex + 2, filewrite);
+			WriteJointData(lEndIndex+2, filewrite);
+			WritePointStaubliEvents(lEndIndex+2, filewrite);
 		}
-
 		filewrite << _T("ELEMENT") + strElement + _T("=END");
 		filewrite.WriteEndl();
 		filewrite.WriteEndl();
 	}
+
+	filewrite << _T("MOVEJ=");
+	WriteJointData(m_lTakeoffIndex, filewrite);
 
 	AfxMessageBox(_T("TCP data output successed"));
 }
@@ -759,7 +762,7 @@ void CRBWCppDlg::WriteJointData(long lRow, CTextFileWrite& filewrite)
 	filewrite.WriteEndl();	
 }
 
-void CRBWCppDlg::WriteCartesianData(long lRow, CTextFileWrite& filewrite)
+void CRBWCppDlg::WriteCartesianData(long lRow, CTextFileWrite& filewrite, bool bWriteEndl)
 {
 	CString strcx, strcy, strcz, strcc, strcb, strca;
 	GetCartesinaData(lRow, strcx, strcy, strcz, strcc, strcb, strca);	
@@ -774,7 +777,8 @@ void CRBWCppDlg::WriteCartesianData(long lRow, CTextFileWrite& filewrite)
 	filewrite << strcb;
 	filewrite << STR_COMMA;
 	filewrite << strca;
-	filewrite.WriteEndl();	
+	if(bWriteEndl)
+		filewrite.WriteEndl();	
 }
 
 void CRBWCppDlg::GetEventData(long lRow, long lColumn, CString &strVaule)
@@ -995,4 +999,9 @@ void CRBWCppDlg::WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite)
 		filewrite << iter->second;
 		filewrite.WriteEndl();
 	}
+}
+
+void CRBWCppDlg::GetMotionType(long lRow, CString& strMotion)
+{
+	GetEventData(lRow, 1, strMotion);
 }
