@@ -505,32 +505,58 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 		else
 		{
 			long lLastEndIndex = vPaths[i-2].GetEndIndex();
-			for(long j = lLastEndIndex + 3; j < lStartIndex; j++)
+			if((lStartIndex - lLastEndIndex) <= 4)
 			{
 				filewrite << _T("MOVEJ=");
-				WriteJointData(j, filewrite);
-				WritePointStaubliEvents(j, filewrite);
+				WriteJointData(lStartIndex-1, filewrite);
+				WritePointStaubliEvents(lStartIndex-1, filewrite);
+			}
+			else
+			{
+				for(long j = lLastEndIndex + 3; j < lStartIndex; j++)
+				{
+					filewrite << _T("MOVEJ=");
+					WriteJointData(j, filewrite);
+					WritePointStaubliEvents(j, filewrite);
+				}
 			}
 		}
 
-		for (long j = lStartIndex; j <= lEndIndex + 2; j++)
+		for (long j = lStartIndex; j <= lEndIndex; j++)
 		{
-			if(j >= m_lTakeoffIndex) break;
-
 			filewrite << _T("MOVEJ=");
 			WriteJointData(j, filewrite);
 			WritePointStaubliEvents(j, filewrite);
 		}
 		if(i == vPaths.size())
 		{
-			if(lEndIndex + 3 < m_lTakeoffIndex)
+			//for the last path, output all the points before landing point and last end point
+			for (long l = lEndIndex + 1; l < m_lTakeoffIndex; l++)
 			{
-				for (long l = lEndIndex + 3; lEndIndex < m_lTakeoffIndex; l++)
-				{
-					filewrite << _T("MOVEJ=");
-					WriteJointData(l, filewrite);
-					WritePointStaubliEvents(l, filewrite);
-				}
+				filewrite << _T("MOVEJ=");
+				WriteJointData(l, filewrite);
+				WritePointStaubliEvents(l, filewrite);
+			}
+		}
+		else
+		{
+			long lNextStartIndex = vPaths[i].GetStartIndex();
+			if((lEndIndex + 2) >= lNextStartIndex)
+			{
+				AfxMessageBox(_T("There should be at least two In Air points between end point and start point!"));
+			}
+
+			//In air points count between two paths may be 2 or more
+			//if there are two points between end and start, then output lEndIndex+1 in current path
+			//if there are more than two points, then output lEndIndex+1 and lEndIndex+2 in current path
+			filewrite << _T("MOVEJ=");
+			WriteJointData(lEndIndex + 1, filewrite);
+			WritePointStaubliEvents(lEndIndex + 1, filewrite);
+			if(((lNextStartIndex - lEndIndex) > 3)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(lEndIndex + 2, filewrite);
+				WritePointStaubliEvents(lEndIndex + 2, filewrite);
 			}
 		}
 
@@ -661,7 +687,7 @@ bool CRBWCppDlg::GetRobotPaths(std::vector<RobotPathObject> &vPaths)
 	std::vector<long> vStartIndexes;
 	std::vector<long> vEndIndexes;
 	long lCount = m_rbwAPI.Get_PointCount();
-	for (long l = m_lLandingIndex; l <= lCount; l++)
+	for (long l = m_lLandingIndex+1; l <= lCount; l++)
 	{
 		CString strProcessType;
 		GetPointProcessType(l, strProcessType);
