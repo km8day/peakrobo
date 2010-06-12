@@ -505,12 +505,16 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 		else
 		{
 			long lLastEndIndex = vPaths[i-2].GetEndIndex();
+			//if there are 2 or 3 points between end and start points
+			//output the point before start point
 			if((lStartIndex - lLastEndIndex) <= 4)
 			{
 				filewrite << _T("MOVEJ=");
 				WriteJointData(lStartIndex-1, filewrite);
 				WritePointStaubliEvents(lStartIndex-1, filewrite);
 			}
+			//4 or more points between end and start points
+			//output points from lLastEndIndex+3 to lStartIndex-1
 			else
 			{
 				for(long j = lLastEndIndex + 3; j < lStartIndex; j++)
@@ -544,6 +548,7 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 			if((lEndIndex + 2) >= lNextStartIndex)
 			{
 				AfxMessageBox(_T("There should be at least two In Air points between end point and start point!"));
+				return;
 			}
 
 			//In air points count between two paths may be 2 or more
@@ -552,7 +557,7 @@ void CRBWCppDlg::OnBnClickedButtonJoint()
 			filewrite << _T("MOVEJ=");
 			WriteJointData(lEndIndex + 1, filewrite);
 			WritePointStaubliEvents(lEndIndex + 1, filewrite);
-			if(((lNextStartIndex - lEndIndex) > 3)
+			if((lNextStartIndex - lEndIndex) > 3)
 			{
 				filewrite << _T("MOVEJ=");
 				WriteJointData(lEndIndex + 2, filewrite);
@@ -603,28 +608,55 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 
 		if(i == 1)
 		{
-			for (long j = m_lLandingIndex + 1; j <= lStartIndex - 2; j++)
+			for (long j = m_lLandingIndex + 1; j <= lStartIndex - 1; j++)
 			{
-				filewrite << _T("MOVEJ=");
-				WriteJointData(j, filewrite);
+				if(j == lStartIndex - 1)
+				{
+					filewrite << _T("MOVEL=");
+					WriteCartesianData(j, filewrite);
+				}
+				else
+				{
+					filewrite << _T("MOVEJ=");
+					WriteJointData(j, filewrite);
+				}
 				WritePointStaubliEvents(j, filewrite);
 			}
 		}
 		else
 		{
-			long lLastEndIndex = vPaths[i-2].GetEndIndex();	
-			for(long j = lLastEndIndex + 3; j < lStartIndex - 1; j++)
+			long lLastEndIndex = vPaths[i-2].GetEndIndex();
+			//if there are 2 or 3 points between end and start points
+			//output the point before start point
+			if((lStartIndex - lLastEndIndex) <= 4)
 			{
-				filewrite << _T("MOVEJ=");
-				WriteJointData(j, filewrite);
-				WritePointStaubliEvents(j, filewrite);
+				filewrite << _T("MOVEL=");
+				WriteCartesianData(lStartIndex-1, filewrite);
+				WritePointStaubliEvents(lStartIndex-1, filewrite);
+			}
+			//4 or more points between end and start points
+			//output points from lLastEndIndex+3 to lStartIndex-1
+			else
+			{
+				for(long j = lLastEndIndex + 3; j < lStartIndex; j++)
+				{
+					if(j == (lStartIndex - 1))
+					{
+						filewrite << _T("MOVEL=");
+						WriteCartesianData(j, filewrite);
+					}
+					else
+					{
+						filewrite << _T("MOVEJ=");
+						WriteJointData(j, filewrite);
+					}
+					WritePointStaubliEvents(j, filewrite);
+				}
 			}
 		}
 
-		for (long j = lStartIndex - 1; j <= lEndIndex + 1; j++)
+		for (long j = lStartIndex; j <= lEndIndex; j++)
 		{
-			if(j >= m_lTakeoffIndex) break;
-
 			CString strMotion;
 			GetMotionType(j, strMotion);
 			if(strMotion.CompareNoCase(_T("MOVEC")) == 0)
@@ -652,24 +684,34 @@ void CRBWCppDlg::OnBnClickedButtonTcp()
 		
 		if(i == vPaths.size())
 		{
-			if(lEndIndex + 2 < m_lTakeoffIndex)
+			for (long l = lEndIndex + 1; l < m_lTakeoffIndex; l++)
 			{
-				filewrite << _T("MOVEJ=");
-				WriteJointData(lEndIndex+2, filewrite);
-				WritePointStaubliEvents(lEndIndex+2, filewrite);
-			}
-			for (long l = lEndIndex + 3; l < m_lTakeoffIndex; l++)
-			{
-				filewrite << _T("MOVEJ=");
-				WriteJointData(l, filewrite);
+				if(l == (lEndIndex+1))
+				{
+					filewrite << _T("MOVEL=");
+					WriteCartesianData(l, filewrite);
+				}
+				else
+				{
+					filewrite << _T("MOVEJ=");
+					WriteJointData(l, filewrite);
+				}
 				WritePointStaubliEvents(l, filewrite);
 			}
 		}
 		else
 		{
-			filewrite << _T("MOVEJ=");
-			WriteJointData(lEndIndex+2, filewrite);
-			WritePointStaubliEvents(lEndIndex+2, filewrite);
+			long lNextStartIndex = vPaths[i].GetStartIndex();
+
+			filewrite << _T("MOVEL=");
+			WriteCartesianData(lEndIndex + 1, filewrite);
+			WritePointStaubliEvents(lEndIndex + 1, filewrite);
+			if((lNextStartIndex - lEndIndex) > 3)
+			{
+				filewrite << _T("MOVEJ=");
+				WriteJointData(lEndIndex + 2, filewrite);
+				WritePointStaubliEvents(lEndIndex + 2, filewrite);
+			}
 		}
 		filewrite << _T("ELEMENT") + strElement + _T("=END");
 		filewrite.WriteEndl();
