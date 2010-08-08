@@ -120,6 +120,47 @@ BOOL CRBWCppDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
+	CLSID clsid;//= _T("{15c6f1e1-c97f-4c9a-8be9-7e9f3aea588b}");
+	HRESULT hr = CLSIDFromProgID(L"RobotWorks65.API", &clsid);
+	if(hr != S_OK)
+	{
+		AfxMessageBox(_T("Did not find the RobotWorks65.exe!"));
+		return FALSE;
+	}
+	LPOLESTR pstr=NULL;
+	StringFromCLSID(clsid, &pstr);
+	CString strclsId(pstr);
+	CString strclsIdPath = _T("CLSID\\") + strclsId + _T("\\LocalServer32");
+	HKEY hKey;
+	TCHAR szProductType[250];
+	DWORD dwBufLen = 250;
+	LONG lRet;
+	lRet = RegOpenKeyEx(HKEY_CLASSES_ROOT,
+										strclsIdPath,
+										0, 
+										KEY_QUERY_VALUE,
+										&hKey); 
+	if(lRet != ERROR_SUCCESS)
+	{
+		AfxMessageBox(_T("Did not find the RobotWorks65.exe install path in registry!"));
+		return FALSE;
+	}
+	lRet = RegQueryValueEx(hKey,
+		_T(""),  
+		NULL,  
+		NULL,   
+		(LPBYTE)szProductType,
+		&dwBufLen);
+	if(lRet != ERROR_SUCCESS) 
+	{
+		AfxMessageBox(_T("Did not find the RobotWorks65.exe install path in registry!"));
+		return FALSE;
+	}
+	RegCloseKey(hKey);
+	m_strRBWpath = szProductType;
+	int index = m_strRBWpath.ReverseFind(_T('\\'));
+	m_strRBWpath = m_strRBWpath.Left(index);
+
 	if(!m_bDispCreated)
 	{
 		BOOL b = m_rbwAPI.CreateDispatch(_T("RobotWorks65.API"));
@@ -139,8 +180,6 @@ BOOL CRBWCppDlg::OnInitDialog()
 
 
 		//OrientationData *pData;// = new OrientationData;
-		//CLSID clsid;//= _T("{15c6f1e1-c97f-4c9a-8be9-7e9f3aea588b}");
-		//HRESULT hr = CLSIDFromProgID(L"RobotWorks65.API", &clsid);
 		//IDispatch *pDis;
 		//hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&pDis);
 		//if(hr == S_OK)
@@ -909,6 +948,11 @@ bool CRBWCppDlg::DoPreCheck()
 		return false;
 	}
 
+	if(!InitializeEventsNames())
+	{
+		AfxMessageBox(_T("Can't get events names from Staubli6.evt!"));
+		return false;
+	}
 	return true;
 }
 
@@ -1072,4 +1116,13 @@ void CRBWCppDlg::WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite)
 void CRBWCppDlg::GetMotionType(long lRow, CString& strMotion)
 {
 	GetEventData(lRow, 1, strMotion);
+}
+
+bool CRBWCppDlg::InitializeEventsNames()
+{
+	CString evtPath = m_strRBWpath + _T("\\Templates\\Staubli6.evt");
+	//if(!PathFileExists(evtPath))
+	//	return false;
+
+	return true;
 }

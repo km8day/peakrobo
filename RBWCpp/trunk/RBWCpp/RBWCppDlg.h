@@ -67,6 +67,8 @@ private:
 	int m_iCurrentOutType; // 1 means Joint output, 2 means TCP output
 	long m_lLandingIndex;
 	long m_lTakeoffIndex;
+	CString m_strRBWpath;
+	std::map<int, CString> mapIndexToEvtName;
 	CString GetTableCellString(long lTable, long lRow, long lCol);
 	void GetFrameData(CString &chx, CString &chy, CString &chz, 
 									CString &chc, CString &chb, CString &cha);
@@ -95,7 +97,7 @@ private:
 											bool bIncludeMotion = false);
 	void WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite);
 	void GetMotionType(long lRow, CString& strMotion);
-
+	bool InitializeEventsNames();
 public:
 	CButton m_button;
 	CProgressCtrl m_ProgressCtrl;
