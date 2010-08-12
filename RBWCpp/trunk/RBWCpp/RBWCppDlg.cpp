@@ -5,6 +5,7 @@
 #include "RBWCpp.h"
 #include "RBWCppDlg.h"
 #include <tlhelp32.h>
+#include "xml.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -160,6 +161,7 @@ BOOL CRBWCppDlg::OnInitDialog()
 	m_strRBWpath = szProductType;
 	int index = m_strRBWpath.ReverseFind(_T('\\'));
 	m_strRBWpath = m_strRBWpath.Left(index);
+	InitializeEventsNames();
 
 	if(!m_bDispCreated)
 	{
@@ -1123,6 +1125,13 @@ bool CRBWCppDlg::InitializeEventsNames()
 	CString evtPath = m_strRBWpath + _T("\\Templates\\Staubli6.evt");
 	//if(!PathFileExists(evtPath))
 	//	return false;
+
+	//char* chfile = (char*)evtPath.GetBuffer(evtPath.GetLength());
+	XML* pxml = new XML(evtPath, XML_LOAD_MODE_LOCAL_FILE);
+	int iPS = pxml->ParseStatus(); // 0 OK , 1 Header warning (not fatal) , 2 Error in parse (fatal)
+	XMLElement* pRootElem = pxml->GetRootElement();
+	XMLElement* pDefElem = pRootElem->FindElementZ("Definition");
+	int nChild = pDefElem->GetChildrenNum();
 
 	return true;
 }
