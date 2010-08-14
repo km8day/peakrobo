@@ -6,6 +6,9 @@
 #include "RBWCppDlg.h"
 #include <tlhelp32.h>
 #include "xml.h"
+#import "msxml6.dll" named_guids raw_interfaces_only 
+#include <msxml.h> 
+using namespace MSXML2;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -161,7 +164,12 @@ BOOL CRBWCppDlg::OnInitDialog()
 	m_strRBWpath = szProductType;
 	int index = m_strRBWpath.ReverseFind(_T('\\'));
 	m_strRBWpath = m_strRBWpath.Left(index);
-	InitializeEventsNames();
+
+	if(!InitializeEventsNames())
+	{
+		AfxMessageBox(_T("Can't get events names from Staubli6.evt!"));
+		return FALSE;
+	}
 
 	if(!m_bDispCreated)
 	{
@@ -950,11 +958,6 @@ bool CRBWCppDlg::DoPreCheck()
 		return false;
 	}
 
-	if(!InitializeEventsNames())
-	{
-		AfxMessageBox(_T("Can't get events names from Staubli6.evt!"));
-		return false;
-	}
 	return true;
 }
 
@@ -1016,7 +1019,7 @@ bool CRBWCppDlg::IsRBWRunning()
 	return bRBW65Runing;
 }
 
-void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap,
+void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::vector<EventValueMap> &eventsvaluemap,
 																bool bIncludeMotion)
 {
 	eventsvaluemap.clear();
@@ -1026,7 +1029,7 @@ void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &ev
 		GetEventData(lRow, 1, strMotion);
 		if(strMotion.IsEmpty() == 0)
 		{
-			eventsvaluemap[MOTION_TYPE] = strMotion;
+			eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[1], strMotion));
 		}
 	}
 
@@ -1034,83 +1037,83 @@ void CRBWCppDlg::GetPointStaubliEvents(long lRow, std::map<CString, CString> &ev
 	GetEventData(lRow, 2, strSpeed);
 	if (strSpeed.IsEmpty() == 0)
 	{
-		eventsvaluemap[SPEED] = strSpeed;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[2], strSpeed));
 	}
 
 	CString strBlend;
 	GetEventData(lRow, 3, strBlend);
 	if (strBlend.IsEmpty() == 0)
 	{
-		eventsvaluemap[BLEND] = strBlend;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[3], strBlend));
 	}
 
 	CString strBypass;
 	GetEventData(lRow, 4, strBypass);
 	if (strBypass.IsEmpty() == 0)
 	{
-		eventsvaluemap[BYPASS] = strBypass;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[4], strBypass));
 	}
 
 	CString strGoSub;
 	GetEventData(lRow, 5, strGoSub);
 	if (strGoSub.IsEmpty() == 0)
 	{
-		eventsvaluemap[GOSUB] = strGoSub;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[5], strGoSub));
 	}
 
 	CString strLaser;
 	GetEventData(lRow, 6, strLaser);
 	if (strLaser.IsEmpty() == 0)
 	{
-		eventsvaluemap[LASER] = strLaser;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[6], strLaser));
 	}
 
 	CString strDelay;
 	GetEventData(lRow, 7, strDelay);
 	if (strDelay.IsEmpty() == 0)
 	{
-		eventsvaluemap[DELAY] = strDelay;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[7], strDelay));
 	}
 
 	CString strSldax;
 	GetEventData(lRow, 8, strSldax);
 	if (strSldax.IsEmpty() == 0)
 	{
-		eventsvaluemap[SLDAX_DIS] = strSldax;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[8], strSldax));
 	}
 
 	CString strProcess;
 	GetEventData(lRow, 9, strProcess);
 	if (strProcess.IsEmpty() == 0)
 	{
-		eventsvaluemap[PROCESS_INDEX] = strProcess;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[9], strProcess));
 	}
 
 	CString strA1;
 	GetEventData(lRow, 10, strA1);
 	if (strA1.IsEmpty() == 0)
 	{
-		eventsvaluemap[A1] = strA1;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[10], strA1));
 	}
 
 	CString strA2;
 	GetEventData(lRow, 11, strA2);
 	if (strA2.IsEmpty() == 0)
 	{
-		eventsvaluemap[A2] = strA2;
+		eventsvaluemap.push_back(EventValueMap(mapIndexToEvtName[11], strA2));
 	}
 }
 
 void CRBWCppDlg::WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite)
 {
-	std::map<CString, CString> eventsmap;
+	std::vector<EventValueMap> eventsmap;
 	GetPointStaubliEvents(lRow, eventsmap);
-	std::map<CString, CString>::iterator iter;
+	std::vector<EventValueMap>::iterator iter;
 	for (iter = eventsmap.begin(); iter != eventsmap.end(); iter++)
 	{
-		filewrite << iter->first;
+		filewrite << iter->GetEvent();
 		filewrite << _T("=");
-		filewrite << iter->second;
+		filewrite << iter->GetVault();
 		filewrite.WriteEndl();
 	}
 }
@@ -1126,12 +1129,90 @@ bool CRBWCppDlg::InitializeEventsNames()
 	//if(!PathFileExists(evtPath))
 	//	return false;
 
-	//char* chfile = (char*)evtPath.GetBuffer(evtPath.GetLength());
-	XML* pxml = new XML(evtPath, XML_LOAD_MODE_LOCAL_FILE);
-	int iPS = pxml->ParseStatus(); // 0 OK , 1 Header warning (not fatal) , 2 Error in parse (fatal)
-	XMLElement* pRootElem = pxml->GetRootElement();
-	XMLElement* pDefElem = pRootElem->FindElementZ("Definition");
-	int nChild = pDefElem->GetChildrenNum();
+	mapIndexToEvtName.clear();
+	////char* chfile = (char*)evtPath.GetBuffer(evtPath.GetLength());
+	//char* chfile = "F:\\Program Files\\RobotWorks65\\Templates\\Staubli6.evt";
+	//XML* pxml = new XML(chfile, XML_LOAD_MODE_LOCAL_FILE);
+	//int iPS = pxml->ParseStatus(); // 0 OK , 1 Header warning (not fatal) , 2 Error in parse (fatal)
+	//XMLElement* pRootElem = pxml->GetRootElement();
+	//XMLElement* pDefElem = pRootElem->FindElementZ("Definition");
+	//int nChild = pDefElem->GetChildrenNum();
+	//for (int i = 0; i < nChild; i++)
+	//{
+	//	XMLElement* pFiled = pDefElem->GetChildren()[i];
+	//	XMLVariable *pFiledID = pFiled->FindVariableZ("FieldID");
+	//	int iIndex = pFiledID->GetValueInt();
+	//	XMLElement* pFiledName = pFiled->FindElementZ("Name");
+	//	XMLContent* pName = pFiledName->GetContents()[0];
+	//	int nMaxElName = pName->GetValue(0);
+	//	char* n = new char[nMaxElName + 1];
+	//	nMaxElName = pName->GetValue(n);
+	//	mapIndexToEvtName[iIndex] = (CString)n;
+	//	delete[] n;
+	//}
+	CComPtr<MSXML2::IXMLDOMDocument> pXmlDoc;
+	HRESULT hr = pXmlDoc.CoCreateInstance(__uuidof(MSXML2::DOMDocument60));
+	if(hr != S_OK)
+	{
+		AfxMessageBox(_T("Can't create MSXML2::DOMDocument60 object, make sure installed MSXML6!"));
+		return false;
+	}
+	VARIANT_BOOL bSuccess = VARIANT_TRUE;
+	hr = pXmlDoc->load(CComVariant(evtPath), &bSuccess);
+	if(hr != S_OK || !bSuccess)
+	{
+		AfxMessageBox(_T("Load Staubli6.evt failed!"));
+		return false;
+	}
+	CComPtr<MSXML2::IXMLDOMNodeList> pFieldNodes;
+	hr = pXmlDoc->selectNodes(CComBSTR(_T("//Events/Definition/Field")), &pFieldNodes);
+	if(hr != S_OK)
+	{
+		AfxMessageBox(_T("Read Staubli6.evt error!"));
+		return false;
+	}
+	long lLength = 0;
+	hr = pFieldNodes->get_length(&lLength);
+	if(hr != S_OK)
+	{
+		AfxMessageBox(_T("Read Staubli6.evt error!"));
+		return false;
+	}
+	for(long l = 0; l < lLength; l++)
+	{
+		CComPtr<MSXML2::IXMLDOMNode> pFieldNode;
+		hr = pFieldNodes->get_item(l, &pFieldNode);
+		if(hr != S_OK || pFieldNode == NULL)
+			continue;
+		CComPtr<MSXML2::IXMLDOMNamedNodeMap> pAttrmap;
+		hr = pFieldNode->get_attributes(&pAttrmap);
+		if(hr != S_OK || pAttrmap == NULL)
+			continue;
+		CComPtr<MSXML2::IXMLDOMNode> pIDNode;
+		hr = pAttrmap->getNamedItem(CComBSTR(_T("FieldID")), &pIDNode);
+		if(hr != S_OK || pIDNode == NULL)
+			continue;
+		CComBSTR bstrID;
+		hr = pIDNode->get_text(&bstrID);
+		if(hr != S_OK)
+			continue;
+		CString strID = bstrID;
 
+		CComPtr<MSXML2::IXMLDOMNode> pNameNode;
+		hr = pFieldNode->selectSingleNode(CComBSTR(_T("Name")), &pNameNode);
+		if(hr != S_OK || pNameNode == NULL)
+			continue;
+		CComBSTR bstrName;
+		hr = pNameNode->get_text(&bstrName);
+		if(hr != S_OK)
+			continue;
+
+		mapIndexToEvtName[_ttoi(strID)] = CString(bstrName);
+	}
+	if(mapIndexToEvtName.size() != 11)
+	{
+		AfxMessageBox(_T("There should 11 events in Staubli6.evt!"));
+		return false;
+	}
 	return true;
 }

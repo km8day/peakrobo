@@ -34,6 +34,30 @@ private:
 	long m_lEndIndex;
 };
 
+class EventValueMap
+{
+public:
+	EventValueMap(CString strEvent, CString strValue)
+	{
+		m_strEvent = strEvent;
+		m_strValue = strValue;
+	}
+
+	CString GetEvent()
+	{
+		return m_strEvent;
+	}
+
+	CString GetVault()
+	{
+		return m_strValue;
+	}
+
+private:
+	CString m_strEvent;
+	CString m_strValue;
+};
+
 // CRBWCppDlg dialog
 class CRBWCppDlg : public CDialog
 {
@@ -93,7 +117,7 @@ private:
 	bool DoPreCheck();
 	void WriteFirstSection(CTextFileWrite& filewrite, long lPathsCnt);
 	bool IsRBWRunning();
-	void GetPointStaubliEvents(long lRow, std::map<CString, CString> &eventsvaluemap,
+	void GetPointStaubliEvents(long lRow, std::vector<EventValueMap> &eventsvaluemap,
 											bool bIncludeMotion = false);
 	void WritePointStaubliEvents(long lRow, CTextFileWrite& filewrite);
 	void GetMotionType(long lRow, CString& strMotion);
