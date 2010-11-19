@@ -12,7 +12,6 @@
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
-
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "TcApplication\Icons\TwinCAT_CNC32.ico"
