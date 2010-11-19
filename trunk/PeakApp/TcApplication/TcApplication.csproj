@@ -1,0 +1,446 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4F91E160-0AF1-4033-B974-C6D255D97F02}</ProjectGuid>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>bin\Debug\Bitmap\TwinCAT_CNC.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>TcApplication</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TcApplication</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Beckhoff.App, Version=2.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\TwinCAT\ADS Api\.NET\v2.0.50727\Beckhoff.App.dll</HintPath>
+    </Reference>
+    <Reference Include="Beckhoff.App.TcMenu, Version=2.0.0.7, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\TwinCAT\ADS Api\.NET\v2.0.50727\Beckhoff.App.TcMenu.dll</HintPath>
+    </Reference>
+    <Reference Include="Beckhoff.EventLogger, Version=2.0.1.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\TwinCAT\ADS Api\.NET\v2.0.50727\Beckhoff.EventLogger.dll</HintPath>
+    </Reference>
+    <Reference Include="Beckhoff.Forms, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\TwinCAT\ADS Api\.NET\v2.0.50727\Beckhoff.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="Beckhoff.Forms.Nc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\TwinCAT\ADS Api\.NET\v2.0.50727\Beckhoff.Forms.Nc.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.TCEVENTLOGGERLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Interop.TcEventLogProxyLib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Interop.TCSYSTEMLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\TwinCAT\ADS Api\.NET\v2.0.50727\Interop.TCSYSTEMLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="tcAppPlcManual, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\tcAppPlcManual.dll</HintPath>
+    </Reference>
+    <Reference Include="TcHmiPlugIn, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\PlugIns\TcHmiPlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="TwinCAT.Ads, Version=2.0.3.0, Culture=neutral, PublicKeyToken=180016cd49e5e8c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\TwinCAT\ADS Api\.NET\v2.0.50727\TwinCAT.Ads.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.ico" />
+    <Content Include="Icons\CNC Axis.bmp" />
+    <Content Include="Icons\CNC Channel.bmp" />
+    <Content Include="Icons\CNC def_Axis.bmp" />
+    <Content Include="Icons\CNC ExtVar.bmp" />
+    <Content Include="Icons\CNC SDA.bmp" />
+    <Content Include="Icons\CNC ZeroPoint.bmp" />
+    <Content Include="Icons\KeyL.ico" />
+    <Content Include="Icons\KeyR.ico" />
+    <Content Include="Icons\tc32.bmp" />
+    <Content Include="Icons\TcRestart.ico" />
+    <Content Include="Icons\TwinCAT_CNC.ico" />
+    <None Include="Icons\TwinCAT_CNC0.ico" />
+    <Content Include="Icons\TwinCAT_CNC32.bmp" />
+    <Content Include="Icons\TwinCAT_CNC32.ico" />
+    <Content Include="Icons\TwinCAT_CNC32_Test.ico" />
+    <Content Include="Icons\TwinCAT_CNC_Transparent.ico" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FormSettings.Designer.cs">
+      <DependentUpon>FormSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSymbolBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSymbolBrowser.Designer.cs">
+      <DependentUpon>FormSymbolBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Header\Header6p5.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Header\Header6p5.designer.cs">
+      <DependentUpon>Header6p5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form8.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form8.Designer.cs">
+      <DependentUpon>Form8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCnc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCnc.Designer.cs">
+      <DependentUpon>FormCnc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLanguage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLanguage.Designer.cs">
+      <DependentUpon>FormLanguage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormManual.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormManual.Designer.cs">
+      <DependentUpon>FormManual.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMaschPara.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMaschPara.Designer.cs">
+      <DependentUpon>FormMaschPara.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMessages.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMessages.Designer.cs">
+      <DependentUpon>FormMessages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMView.Designer.cs">
+      <DependentUpon>FormMView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormOption.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormOption.Designer.cs">
+      <DependentUpon>FormOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPlcStatus.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPlcStatus.Designer.cs">
+      <DependentUpon>FormPlcStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRecipe.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRecipe.designer.cs">
+      <DependentUpon>FormRecipe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSplash.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSplash.Designer.cs">
+      <DependentUpon>FormSplash.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSystemInfo.cs">
+    </Compile>
+    <Compile Include="Header\IAppHeader.cs" />
+    <Compile Include="Header\Header12.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Header\Header12.designer.cs">
+      <DependentUpon>Header12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Header\Header15.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Header\Header15.designer.cs">
+      <DependentUpon>Header15.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Header\UserHeader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Header\UserHeader.Designer.cs">
+      <DependentUpon>UserHeader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainApp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainApp.Designer.cs">
+      <DependentUpon>MainApp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MVStatus.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MVStatus.Designer.cs">
+      <DependentUpon>MVStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OperationMode\OPModeAuto.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OperationMode\OPModeAuto.Designer.cs">
+      <DependentUpon>OPModeAuto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OperationMode\OPModeManual.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OperationMode\OPModeManual.Designer.cs">
+      <DependentUpon>OPModeManual.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OperationMode\OPModeMDI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OperationMode\OPModeMDI.Designer.cs">
+      <DependentUpon>OPModeMDI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OperationMode\OpModeWindow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Settings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Technology\BlockSearch.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Technology\BlockSearch.designer.cs">
+      <DependentUpon>BlockSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Technology\SyntaxCheck.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Technology\SyntaxCheck.designer.cs">
+      <DependentUpon>SyntaxCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Technology\TeachIn.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Technology\TeachIn.designer.cs">
+      <DependentUpon>TeachIn.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="FormSymbolBrowser.resx">
+      <DependentUpon>FormSymbolBrowser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Header\Header6p5.resx">
+      <DependentUpon>Header6p5.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form8.resx">
+      <DependentUpon>Form8.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCnc.resx">
+      <DependentUpon>FormCnc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLanguage.resx">
+      <DependentUpon>FormLanguage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormManual.resx">
+      <DependentUpon>FormManual.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMaschPara.resx">
+      <DependentUpon>FormMaschPara.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMessages.resx">
+      <DependentUpon>FormMessages.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMView.resx">
+      <DependentUpon>FormMView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPlcStatus.resx">
+      <DependentUpon>FormPlcStatus.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRecipe.resx">
+      <DependentUpon>FormRecipe.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSettings.resx">
+      <DependentUpon>FormSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSplash.resx">
+      <DependentUpon>FormSplash.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Header\Header12.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Header12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Header\Header15.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Header15.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Header\UserHeader.resx">
+      <DependentUpon>UserHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainApp.resx">
+      <DependentUpon>MainApp.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MVStatus.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MVStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OperationMode\OPModeAuto.resx">
+      <DependentUpon>OPModeAuto.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OperationMode\OPModeManual.resx">
+      <DependentUpon>OPModeManual.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OperationMode\OPModeMDI.resx">
+      <DependentUpon>OPModeMDI.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Technology\BlockSearch.resx">
+      <DependentUpon>BlockSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Technology\SyntaxCheck.resx">
+      <DependentUpon>SyntaxCheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Technology\TeachIn.resx">
+      <DependentUpon>TeachIn.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
