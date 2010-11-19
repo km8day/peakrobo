@@ -2,6 +2,11 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcApplication", "TcApplication\TcApplication.csproj", "{4F91E160-0AF1-4033-B974-C6D255D97F02}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C84BC611-D1EE-4715-9B90-B17F74002373}"
+	ProjectSection(SolutionItems) = preProject
+		TcAppInstall.nsi = TcAppInstall.nsi
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
