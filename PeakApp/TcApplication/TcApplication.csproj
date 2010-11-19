@@ -156,6 +156,7 @@
     <Content Include="Icons\TcRestart.ico" />
     <Content Include="Icons\TwinCAT_CNC.ico" />
     <None Include="Icons\TwinCAT_CNC0.ico" />
+    <None Include="TcAppInstall.nsi" />
     <Content Include="Icons\TwinCAT_CNC32.bmp" />
     <Content Include="Icons\TwinCAT_CNC32.ico" />
     <Content Include="Icons\TwinCAT_CNC32_Test.ico" />
