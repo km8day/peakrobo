@@ -35,6 +35,7 @@
 !define MUI_FINISHPAGE_RUN "$INSTDIR\TcApplication.exe"
 !insertmacro MUI_PAGE_FINISH
 
+!insertmacro MUI_UNPAGE_CONFIRM
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
 
@@ -45,10 +46,16 @@
 ; License Language
 LicenseLangString MUILicense 1033 "TcApplication\License\1033\license.txt"
 LicenseLangString MUILicense 2052 "TcApplication\License\2052\license.txt"
+LangString installtwincat 1033 "TwinCAT not found, please install TwinCAT firstly!"
+LangString installtwincat 2052 "请先安装TwinCAT!"
+LangString removed 1033 "removed from your computer."
+LangString removed 2052 "已成功地从你的计算机移除。"
+LangString uninstallmsg 1033 "Are you reall want to remove"
+LangString uninstallmsg 2052 "你确实要完全移除"
 
 ; MUI end ------
-
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+var productname
+Name "$productname ${PRODUCT_VERSION}"
 OutFile "Stoke Laser Cutting Control System Setup.exe"
 InstallDir "$PROGRAMFILES\Stoke Robot"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
@@ -77,10 +84,14 @@ Function .onInit
   EnumRegKey $0 HKLM "SOFTWARE\Beckhoff\TwinCAT" 0
   IfErrors 0 keyexist
   # key does not exist
-  MessageBox MB_OK "TwinCAT not found, please install TwinCAT firstly!"
+  MessageBox MB_OK "$(installtwincat)"
   Abort ; causes installer to quit.
   keyexist:
   !insertmacro MUI_LANGDLL_DISPLAY
+  Strcmp $LANGUAGE "1033" 0 +3
+  StrCpy $productname "Stoke Laser Cutting Control System"
+  Goto +2
+  StrCpy $productname "斯托克激光切割控制系统"
 FunctionEnd
 
 Section "MainSection" SEC01
@@ -223,9 +234,9 @@ Section "MainSection" SEC01
   File "TcApplication\bin\Release\TcAppUser.usr"
   File "TcApplication\bin\Release\tcAppPlcManual.dll"
   File "TcApplication\bin\Release\TcApplication.exe"
-  CreateDirectory "$SMPROGRAMS\Stoke Robot HMI Pro"
-  CreateShortCut "$SMPROGRAMS\Stoke Robot HMI Pro\Stoke Robot HMI Pro.lnk" "$INSTDIR\TcApplication.exe"
-  CreateShortCut "$DESKTOP\Stoke Robot HMI Pro.lnk" "$INSTDIR\TcApplication.exe"
+  CreateDirectory "$SMPROGRAMS\Stoke Robot"
+  CreateShortCut "$SMPROGRAMS\Stoke Robot\Stoke Laser Cutting Control System.lnk" "$INSTDIR\TcApplication.exe"
+  CreateShortCut "$DESKTOP\Stoke Laser Cutting Control System.lnk" "$INSTDIR\TcApplication.exe"
   File "TcApplication\bin\Release\TcAppIoDiagnostic.dll"
   File "TcApplication\bin\Release\log4net.dll"
   File "TcApplication\bin\Release\Interop.TCSYSTEMLib.dll"
@@ -247,13 +258,17 @@ SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\Stoke Robot HMI Pro\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\Stoke Robot HMI Pro\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\Stoke Robot\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\Stoke Robot\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\TcApplication.exe"
+  Strcmp $LANGUAGE "1033" 0 +3
+  StrCpy $productname "Stoke Laser Cutting Control System"
+  Goto +2
+  StrCpy $productname "斯托克激光切割控制系统"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\TcApplication.exe"
@@ -265,13 +280,22 @@ SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) 已成功地从你的计算机移除。"
+  Strcmp $LANGUAGE "1033" 0 +3
+  StrCpy $productname "Stoke Laser Cutting Control System"
+  Goto +2
+  StrCpy $productname "斯托克激光切割控制系统"
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) $(removed)"
 FunctionEnd
 
 Function un.onInit
 !insertmacro MUI_UNGETLANGUAGE
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "你确实要完全移除 $(^Name) ，其及所有的组件？" IDYES +2
-  Abort
+  Strcmp $LANGUAGE "1033" 0 +3
+  StrCpy $productname "Stoke Laser Cutting Control System"
+  Goto +2
+  StrCpy $productname "斯托克激光切割控制系统"
+  ;!define MUI_UNCONFIRMPAGE_TEXT_TOP "$(^Name)"
+  ;MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "$(uninstallmsg) $(^Name)？" IDYES +2
+  ;Abort
 FunctionEnd
 
 Section Uninstall
@@ -430,12 +454,12 @@ Section Uninstall
   Delete "$INSTDIR\PLC\External Variables\TwinCAT_CNC_OneChannel_with_ExternalVars.tsm"
   Delete "$INSTDIR\PLC\*.*"
 
-  Delete "$SMPROGRAMS\Stoke Robot HMI Pro\Uninstall.lnk"
-  Delete "$SMPROGRAMS\Stoke Robot HMI Pro\Website.lnk"
-  Delete "$DESKTOP\Stoke Robot HMI Pro.lnk"
-  Delete "$SMPROGRAMS\Stoke Robot HMI Pro\Stoke Robot HMI Pro.lnk"
+  Delete "$SMPROGRAMS\Stoke Robot\Uninstall.lnk"
+  Delete "$SMPROGRAMS\Stoke Robot\Website.lnk"
+  Delete "$DESKTOP\Stoke Laser Cutting Control System.lnk"
+  Delete "$SMPROGRAMS\Stoke Robot\Stoke Laser Cutting Control System.lnk"
   
-  RMDir "$SMPROGRAMS\Stoke Robot HMI Pro"
+  RMDir "$SMPROGRAMS\Stoke Robot"
   RMDir "$INSTDIR\Bitmap\State"
   RMDir "$INSTDIR\Bitmap\Flags"
   RMDir "$INSTDIR\Bitmap"
