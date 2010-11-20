@@ -395,6 +395,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Header\UserHeader.resx">
       <DependentUpon>UserHeader.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MainApp.resx">
       <DependentUpon>MainApp.cs</DependentUpon>
@@ -418,12 +419,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Technology\BlockSearch.resx">
       <DependentUpon>BlockSearch.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Technology\SyntaxCheck.resx">
       <DependentUpon>SyntaxCheck.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Technology\TeachIn.resx">
       <DependentUpon>TeachIn.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
