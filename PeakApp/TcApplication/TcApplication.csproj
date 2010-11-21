@@ -152,6 +152,8 @@
     <Content Include="Icons\CNC ZeroPoint.bmp" />
     <Content Include="Icons\KeyL.ico" />
     <Content Include="Icons\KeyR.ico" />
+    <Content Include="Icons\stoke2.bmp" />
+    <Content Include="Icons\stokerobot.ico" />
     <Content Include="Icons\tc32.bmp" />
     <Content Include="Icons\TcRestart.ico" />
     <Content Include="Icons\TwinCAT_CNC.ico" />

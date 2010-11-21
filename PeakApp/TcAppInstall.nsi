@@ -14,7 +14,7 @@
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "TcApplication\Icons\TwinCAT_CNC32.ico"
+!define MUI_ICON "TcApplication\Icons\stokerobot.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 ; Language Selection Dialog Settings
@@ -22,6 +22,7 @@
 !define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
 
+!define MUI_WELCOMEFINISHPAGE_BITMAP "TcApplication\Icons\stoke2.bmp"
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
