@@ -22,6 +22,7 @@
 !define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
 
+!define MUI_LANGDLL_ALWAYSSHOW
 !define MUI_WELCOMEFINISHPAGE_BITMAP "TcApplication\Icons\stoke2.bmp"
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -53,6 +54,8 @@ LangString removed 1033 "removed from your computer."
 LangString removed 2052 "已成功地从你的计算机移除。"
 LangString uninstallmsg 1033 "Are you reall want to remove"
 LangString uninstallmsg 2052 "你确实要完全移除"
+LangString alreadyinstall 1033 "Stoke Laser Cutting Control System has been installed on this computer!"
+LangString alreadyinstall 2052 "斯托克激光切割控制系统已经安装在本机！"
 
 ; MUI end ------
 var productname
@@ -63,6 +66,7 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 SetCompress off
+BrandingText "Stoke Robot Software"
 
 VIProductVersion "1.0.0.0"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Stoke Laser Cutting Control System"
@@ -88,11 +92,19 @@ Function .onInit
   MessageBox MB_OK "$(installtwincat)"
   Abort ; causes installer to quit.
   keyexist:
+  ClearErrors
+  EnumRegKey $0 HKLM "${PRODUCT_DIR_REGKEY}" 0
+  IfErrors 0 keyexist1
+  # key does not exist
   !insertmacro MUI_LANGDLL_DISPLAY
   Strcmp $LANGUAGE "1033" 0 +3
   StrCpy $productname "Stoke Laser Cutting Control System"
   Goto +2
   StrCpy $productname "斯托克激光切割控制系统"
+  Goto +4
+  keyexist1:
+  MessageBox MB_OK $(alreadyinstall)
+  Abort ; causes installer to quit.
 FunctionEnd
 
 Section "MainSection" SEC01
