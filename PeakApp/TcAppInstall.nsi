@@ -9,6 +9,7 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
+!define TEMP1 $R0 ;Temp variable
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
@@ -29,6 +30,7 @@
 ; License page
 !define MUI_LICENSEPAGE_CHECKBOX
 !insertmacro MUI_PAGE_LICENSE "$(MUILicense)"
+Page custom SetCustom ValidateCustom ": Testing InstallOptions" ;Custom page. InstallOptions gets called in SetCustom.
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
@@ -45,6 +47,10 @@
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "SimpChinese"
 
+!insertmacro MUI_RESERVEFILE_LANGDLL
+ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
+ReserveFile "\verify.ini"
+
 ; License Language
 LicenseLangString MUILicense 1033 "TcApplication\License\1033\license.txt"
 LicenseLangString MUILicense 2052 "TcApplication\License\2052\license.txt"
@@ -56,6 +62,7 @@ LangString uninstallmsg 1033 "Are you reall want to remove"
 LangString uninstallmsg 2052 "你确实要完全移除"
 LangString alreadyinstall 1033 "Stoke Laser Cutting Control System has been installed on this computer!"
 LangString alreadyinstall 2052 "斯托克激光切割控制系统已经安装在本机！"
+
 
 ; MUI end ------
 var productname
@@ -85,6 +92,8 @@ VIAddVersionKey /LANG=2052 "FileVersion" "1.0"
 
 
 Function .onInit
+  InitPluginsDir
+  File "\verify.ini"
   ClearErrors
   EnumRegKey $0 HKLM "SOFTWARE\Beckhoff\TwinCAT" 0
   IfErrors 0 keyexist
@@ -105,6 +114,27 @@ Function .onInit
   keyexist1:
   MessageBox MB_OK $(alreadyinstall)
   Abort ; causes installer to quit.
+FunctionEnd
+
+Function SetCustom
+
+  ;Display the InstallOptions dialog
+
+  Push ${TEMP1}
+
+    InstallOptions::dialog "\verify.ini"
+    Pop ${TEMP1}
+    InstallOptions::show
+  Pop ${TEMP1}
+
+FunctionEnd
+
+Function ValidateCustom
+
+FileOpen $1 $EXEDIR\${TEMP1}.ini w
+FileClose $1
+
+  done:
 FunctionEnd
 
 Section "MainSection" SEC01
