@@ -48,8 +48,8 @@ Page custom SetCustom ValidateCustom ": Testing InstallOptions" ;Custom page. In
 !insertmacro MUI_LANGUAGE "SimpChinese"
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
-ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
-ReserveFile "\userinfo.ini"
+;ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
+;ReserveFile "\userinfo.ini"
 
 ; License Language
 LicenseLangString MUILicense 1033 "TcApplication\License\1033\license.txt"
@@ -92,8 +92,9 @@ VIAddVersionKey /LANG=2052 "FileVersion" "1.0"
 
 
 Function .onInit
-  InitPluginsDir
-  File "\userinfo.ini"
+  ;InitPluginsDir
+  ;File "\userinfo.ini"
+  !insertmacro INSTALLOPTIONS_EXTRACT "userinfo.ini"
   ClearErrors
   EnumRegKey $0 HKLM "SOFTWARE\Beckhoff\TwinCAT" 0
   IfErrors 0 keyexist
@@ -119,22 +120,24 @@ FunctionEnd
 Function SetCustom
 
   ;Display the InstallOptions dialog
+  !insertmacro INSTALLOPTIONS_WRITE "userinfo.ini" "Field 1" "Text" $(uninstallmsg)
+  !insertmacro INSTALLOPTIONS_DISPLAY "userinfo.ini"
+  ;Push ${TEMP1}
 
-  Push ${TEMP1}
-
-    InstallOptions::dialog /NOUNLOAD "\userinfo.ini"
-    Pop ${TEMP1}
-    InstallOptions::show
-  Pop ${TEMP1}
+    ;InstallOptions::dialog /NOUNLOAD "\userinfo.ini"
+    ;Pop ${TEMP1}
+    ;InstallOptions::show
+    
+  ;Pop ${TEMP1}
 
 FunctionEnd
 
 Function ValidateCustom
 
-FileOpen $1 $EXEDIR\${TEMP1}.ini w
-FileClose $1
+;FileOpen $1 $EXEDIR\${TEMP1}.ini w
+;FileClose $1
+;done:
 
-  done:
 FunctionEnd
 
 Section "MainSection" SEC01
