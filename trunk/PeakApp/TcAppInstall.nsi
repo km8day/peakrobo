@@ -49,7 +49,7 @@ Page custom SetCustom ValidateCustom ": Testing InstallOptions" ;Custom page. In
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
 ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
-ReserveFile "\verify.ini"
+ReserveFile "\userinfo.ini"
 
 ; License Language
 LicenseLangString MUILicense 1033 "TcApplication\License\1033\license.txt"
@@ -93,7 +93,7 @@ VIAddVersionKey /LANG=2052 "FileVersion" "1.0"
 
 Function .onInit
   InitPluginsDir
-  File "\verify.ini"
+  File "\userinfo.ini"
   ClearErrors
   EnumRegKey $0 HKLM "SOFTWARE\Beckhoff\TwinCAT" 0
   IfErrors 0 keyexist
@@ -122,7 +122,7 @@ Function SetCustom
 
   Push ${TEMP1}
 
-    InstallOptions::dialog "\verify.ini"
+    InstallOptions::dialog /NOUNLOAD "\userinfo.ini"
     Pop ${TEMP1}
     InstallOptions::show
   Pop ${TEMP1}
