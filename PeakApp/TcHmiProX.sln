@@ -4,6 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcApplication", "TcApplicat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C84BC611-D1EE-4715-9B90-B17F74002373}"
 	ProjectSection(SolutionItems) = preProject
+		StokeLaserInstall.iss = StokeLaserInstall.iss
 		TcAppInstall.nsi = TcAppInstall.nsi
 		userinfo.ini = userinfo.ini
 		verify.ini = verify.ini
