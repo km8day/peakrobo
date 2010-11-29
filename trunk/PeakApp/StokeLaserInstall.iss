@@ -21,6 +21,11 @@ SetupIconFile=H:\TcHmiPro\TcApplication\Icons\stokerobot.ico
 Compression=none
 SolidCompression=no
 VersionInfoVersion=1.0
+UserInfoPage=yes
+VersionInfoCompany=Nanjing Stoke Robot System Co.,Ltd.
+VersionInfoProductName=Stoke Laser Cutting Control System 1.0
+VersionInfoDescription=Stoke Laser Cutting Control System
+VersionInfoCopyright=Nanjing Stoke Robot System Co.,Ltd.
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "H:\TcHmiPro\TcApplication\License\1033\license.txt"
@@ -33,22 +38,6 @@ english.MyPublisher=Nanjing Stoke Robot System Co.,Ltd.
 chinese.MyPublisher=南京斯托克机器人系统有限公司
 english.InstallTWINCAT=Please install TwinCAT firstly!
 chinese.InstallTWINCAT=请先安装TwinCAT!   
-english.CustInfo=Customer Information
-chinese.CustInfo=用户信息  
-english.SubDes=Please specify your name and the company for whom you work, then click Next.
-chinese.SubDes=请填写个人以及公司信息，然后点击下一步.
-english.PersonalName=Name：
-chinese.PersonalName=姓名：
-english.CompanyName=Company：
-chinese.CompanyName=公司：
-english.SerialNum=Serial Number：
-chinese.SerialNum=序列号：
-english.NameNeeded=Please enter your name.
-chinese.NameNeeded=请输入姓名.
-english.CompanyNeeded=Please enter your company.
-chinese.CompanyNeeded=请输入公司.
-english.invalidserialnum=Invalid Serial Number.
-chinese.invalidserialnum=序列号无效.
 
 [Code]
 var
@@ -61,50 +50,17 @@ begin
     MsgBox(ExpandConstant('{cm:InstallTWINCAT}'), mbInformation, MB_OK);
 end;
 
-procedure InitializeWizard;
-begin  
-  UserPage := CreateInputQueryPage(wpWelcome,
-    ExpandConstant('{cm:CustInfo}'), '',
-    ExpandConstant('{cm:SubDes}'));
-  UserPage.Add(ExpandConstant('{cm:PersonalName}'), False);
-  UserPage.Add(ExpandConstant('{cm:CompanyName}'), False);
-  UserPage.Add(ExpandConstant('{cm:SerialNum}'), False);
-  
-  UserPage.Values[0] := GetPreviousData(ExpandConstant('{cm:PersonalName}'), ExpandConstant('{sysuserinfoname}'));
-  UserPage.Values[1] := GetPreviousData(ExpandConstant('{cm:CompanyName}'), ExpandConstant('{sysuserinfoorg}'));
+function CheckSerial(Serial: String): Boolean;
+begin
+  if(Serial = '1234') then
+  Result := True
+  else
+  Result := False;
 end;
 
-function NextButtonClick(CurPageID: Integer): Boolean;
+function GetDate(Param: String) : String;
 begin
-       if(CurPageID = UserPage.ID) then  begin
-           if( UserPage.Values[0] = '') then begin
-              MsgBox(ExpandConstant('{cm:NameNeeded}'), mbError, MB_OK);
-              Result := False;
-           end else begin
-              if( UserPage.Values[1] = '') then begin
-                MsgBox(ExpandConstant('{cm:CompanyNeeded}'), mbError, MB_OK);
-                Result := False;
-              end else begin
-              if(UserPage.Values[2] = '1234') then
-                Result := True
-              else  begin
-                MsgBox(ExpandConstant('{cm:invalidserialnum}'), mbError, MB_OK);
-                Result := False;
-                end;
-               end;
-              end;
-       end else
-         Result := True;
-end;
-
-function GetUser(Param: String): String;
-begin
-  { Return a user value }
-  { Could also be split into separate GetUserName and GetUserCompany functions }
-  if Param = 'Name' then
-    Result := UserPage.Values[0]
-  else if Param = 'Company' then
-    Result := UserPage.Values[1];
+    Result := GetDateTimeString('ddddd', #0, #0);
 end;
 
 [Tasks]
@@ -163,5 +119,8 @@ Root: HKLM; Subkey: "Software\Stoke Robot"; Flags: uninsdeletekeyifempty
 Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System"; 
 Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\Settings"; ValueType: string; ValueName: "Path"; ValueData: "{app}" ;   Flags: uninsdeletekey
 Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\Settings"; ValueType: string; ValueName: "Version"; ValueData: "1.0" ;    Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "Name"; ValueData: "{code:GetUser|Name}"
-Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "Company"; ValueData: "{code:GetUser|Company}"
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "Name"; ValueData: "{userinfoname}"
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "Company"; ValueData: "{userinfoorg}"
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "SerialNumber"; ValueData: "{userinfoserial}" ;Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "InstallDate"; ValueData:"{code:GetDate|test}" 
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\SLCCS\TcApplication.exe"; ValueType: string; ValueName: "Date"; ValueData: "{code:GetDate|test}"
