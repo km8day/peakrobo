@@ -43,10 +43,17 @@ english.CompanyName=Company：
 chinese.CompanyName=公司：
 english.SerialNum=Serial Number：
 chinese.SerialNum=序列号：
+english.NameNeeded=Please enter your name.
+chinese.NameNeeded=请输入姓名.
+english.CompanyNeeded=Please enter your company.
+chinese.CompanyNeeded=请输入公司.
+english.invalidserialnum=Invalid Serial Number.
+chinese.invalidserialnum=序列号无效.
 
 [Code]
 var
   UserPage: TInputQueryWizardPage;
+
 function InitializeSetup(): Boolean;
 begin
   Result :=RegValueExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\Beckhoff\TwinCAT', 'InstallationPath');
@@ -65,6 +72,39 @@ begin
   
   UserPage.Values[0] := GetPreviousData(ExpandConstant('{cm:PersonalName}'), ExpandConstant('{sysuserinfoname}'));
   UserPage.Values[1] := GetPreviousData(ExpandConstant('{cm:CompanyName}'), ExpandConstant('{sysuserinfoorg}'));
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+       if(CurPageID = UserPage.ID) then  begin
+           if( UserPage.Values[0] = '') then begin
+              MsgBox(ExpandConstant('{cm:NameNeeded}'), mbError, MB_OK);
+              Result := False;
+           end else begin
+              if( UserPage.Values[1] = '') then begin
+                MsgBox(ExpandConstant('{cm:CompanyNeeded}'), mbError, MB_OK);
+                Result := False;
+              end else begin
+              if(UserPage.Values[2] = '1234') then
+                Result := True
+              else  begin
+                MsgBox(ExpandConstant('{cm:invalidserialnum}'), mbError, MB_OK);
+                Result := False;
+                end;
+               end;
+              end;
+       end else
+         Result := True;
+end;
+
+function GetUser(Param: String): String;
+begin
+  { Return a user value }
+  { Could also be split into separate GetUserName and GetUserCompany functions }
+  if Param = 'Name' then
+    Result := UserPage.Values[0]
+  else if Param = 'Company' then
+    Result := UserPage.Values[1];
 end;
 
 [Tasks]
@@ -120,6 +160,8 @@ Type: filesandordirs; Name: "{app}\System\"
 
 [Registry]
 Root: HKLM; Subkey: "Software\Stoke Robot"; Flags: uninsdeletekeyifempty
-Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\Settings"; ValueType: string; ValueName: "Path"; ValueData: "{app}"
-Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\Settings"; ValueType: string; ValueName: "Version"; ValueData: "1.0"
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System"; 
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\Settings"; ValueType: string; ValueName: "Path"; ValueData: "{app}" ;   Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\Settings"; ValueType: string; ValueName: "Version"; ValueData: "1.0" ;    Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "Name"; ValueData: "{code:GetUser|Name}"
+Root: HKLM; Subkey: "Software\Stoke Robot\Stoke Laser Cutting Control System\UserInfo"; ValueType: string; ValueName: "Company"; ValueData: "{code:GetUser|Company}"
