@@ -162,6 +162,12 @@
     <Content Include="Icons\TwinCAT_CNC32.ico" />
     <Content Include="Icons\TwinCAT_CNC32_Test.ico" />
     <Content Include="Icons\TwinCAT_CNC_Transparent.ico" />
+    <Compile Include="FormInputEncryptFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormInputEncryptFile.Designer.cs">
+      <DependentUpon>FormInputEncryptFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -331,6 +337,10 @@
     <Compile Include="Technology\TeachIn.designer.cs">
       <DependentUpon>TeachIn.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="FormInputEncryptFile.resx">
+      <DependentUpon>FormInputEncryptFile.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormSymbolBrowser.resx">
       <DependentUpon>FormSymbolBrowser.cs</DependentUpon>
       <SubType>Designer</SubType>

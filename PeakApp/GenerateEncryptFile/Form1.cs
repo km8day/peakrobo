@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using EncryptFile;
 
 namespace GenerateEncryptFile
 {
@@ -45,14 +46,23 @@ namespace GenerateEncryptFile
                 MessageBox.Show("期限应该为数字！");
                 return;
             }
+            string strdays = this.mDaysText.Text.Trim();
+
+            string struserpass = "stokerobotuser@nanjing.com";
+            string strcomppass = "stokerobotcompany@nanjing.com";
+            string strdayspass = "stokerobotdays@nanjing.com";
+            string[] contents = new string[3];
+            contents[0] = EncryptUtil.Encrypt(strUser, struserpass);
+            contents[1] = EncryptUtil.Encrypt(strCompany, strcomppass);
+            contents[2] = EncryptUtil.Encrypt(strdays, strdayspass);
 
             SaveFileDialog savedlg = new SaveFileDialog();
             savedlg.Filter = "Stoke files(*.stk)|*.stk";
             savedlg.OverwritePrompt = true;
             savedlg.ValidateNames = true;
-            if(savedlg.ShowDialog() == DialogResult.OK)
+            if(savedlg.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(savedlg.FileName))
             {
-               
+                System.IO.File.WriteAllLines(savedlg.FileName, contents);
             }
         }
     }
