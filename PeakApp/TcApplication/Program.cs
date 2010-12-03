@@ -29,15 +29,6 @@ namespace TcApplication
 			//Application.EnableVisualStyles();
 			//Application.SetCompatibleTextRenderingDefault(false);
 
-            FormInputEncryptFile inputencrypt = new FormInputEncryptFile();
-            inputencrypt.StartPosition = FormStartPosition.CenterScreen;
-            if (inputencrypt.ShowDialog() == DialogResult.OK)
-            {
-
-            }
-            else
-                return;
-
 			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
 
 			if (CheckActiveProcess() == true)
