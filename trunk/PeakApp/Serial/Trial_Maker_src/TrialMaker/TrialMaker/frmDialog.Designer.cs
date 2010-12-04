@@ -78,7 +78,7 @@ namespace SoftwareLocker
             this.grbRegister.Controls.Add(this.sebBaseString);
             this.grbRegister.Controls.Add(this.btnOK);
             this.grbRegister.Controls.Add(this.sebPassword);
-            this.grbRegister.Location = new System.Drawing.Point(12, 68);
+            this.grbRegister.Location = new System.Drawing.Point(12, 46);
             this.grbRegister.Name = "grbRegister";
             this.grbRegister.Size = new System.Drawing.Size(350, 238);
             this.grbRegister.TabIndex = 1;
@@ -123,11 +123,10 @@ namespace SoftwareLocker
             // 
             this.lblComment.Location = new System.Drawing.Point(12, 8);
             this.lblComment.Name = "lblComment";
-            this.lblComment.Size = new System.Drawing.Size(317, 57);
+            this.lblComment.Size = new System.Drawing.Size(317, 35);
             this.lblComment.TabIndex = 0;
             this.lblComment.Text = "To use this application, you must buy it.\r\nBefore buying, you can run application" +
-                " as trial. in trial mode some parts may be inactive and after buying they will b" +
-                "e active";
+                " as trial.";
             // 
             // lblDaysToEnd
             // 
@@ -176,7 +175,7 @@ namespace SoftwareLocker
             this.grbTrialRunning.Controls.Add(this.lblDays);
             this.grbTrialRunning.Controls.Add(this.lblTimes);
             this.grbTrialRunning.Controls.Add(this.btnTrial);
-            this.grbTrialRunning.Location = new System.Drawing.Point(12, 312);
+            this.grbTrialRunning.Location = new System.Drawing.Point(12, 300);
             this.grbTrialRunning.Name = "grbTrialRunning";
             this.grbTrialRunning.Size = new System.Drawing.Size(350, 68);
             this.grbTrialRunning.TabIndex = 8;
