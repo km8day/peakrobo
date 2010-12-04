@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SoftwareLocker;
 
 namespace TcApplication
 {
@@ -26,8 +27,22 @@ namespace TcApplication
 		[STAThread]
 		static void Main()
 		{
-			//Application.EnableVisualStyles();
-			//Application.SetCompatibleTextRenderingDefault(false);
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+
+            TrialMaker t = new TrialMaker("StokeRobotLaserControlSys1", Application.StartupPath + "\\RegFile.reg",
+                Environment.GetFolderPath(Environment.SpecialFolder.System) + "\\SRLCS1.dbf",
+                "Mail: zili.jin@163.com",
+                30, 100000, "158");
+
+            byte[] MyOwnKey = { 97, 250, 1, 5, 84, 21, 7, 63,
+            4, 54, 87, 56, 123, 10, 3, 62,
+            7, 9, 20, 36, 37, 21, 101, 57};
+            t.TripleDESKey = MyOwnKey;
+
+            TrialMaker.RunTypes RT = t.ShowDialog();
+            if (RT == TrialMaker.RunTypes.Expired)
+                return;
 
 			Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
 
