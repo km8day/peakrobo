@@ -97,7 +97,7 @@ namespace SoftwareLocker
             frmDialog PassDialog = new frmDialog(_BaseString, _Password, DaysToEnd(), _Runed, _Text);
             
             MakeHideFile();
-
+            PassDialog.StartPosition = FormStartPosition.CenterScreen;
             DialogResult DR = PassDialog.ShowDialog();
 
             if (DR == System.Windows.Forms.DialogResult.OK)
