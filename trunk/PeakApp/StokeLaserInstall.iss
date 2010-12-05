@@ -18,8 +18,8 @@ DefaultGroupName=Stoke Robot
 DisableProgramGroupPage=yes
 OutputBaseFilename=Stoke Laser Cutting Control System Setup
 SetupIconFile=H:\TcHmiPro\TcApplication\Icons\stokerobot.ico
-Compression=none
-SolidCompression=no
+Compression=lzma2
+SolidCompression=yes
 VersionInfoVersion=1.0
 UserInfoPage=yes
 VersionInfoCompany=Nanjing Stoke Robot System Co.,Ltd.
@@ -50,14 +50,6 @@ begin
     MsgBox(ExpandConstant('{cm:InstallTWINCAT}'), mbInformation, MB_OK);
 end;
 
-function CheckSerial(Serial: String): Boolean;
-begin
-  if(Serial = '1234') then
-  Result := True
-  else
-  Result := False;
-end;
-
 function GetDate(Param: String) : String;
 begin
     Result := GetDateTimeString('ddddd', #0, #0);
@@ -78,15 +70,10 @@ Source: "H:\TcHmiPro\TcApplication\bin\Release\System\*"; DestDir: "{app}\System
 Source: "H:\TcHmiPro\TcApplication\bin\Release\TcMenu\*"; DestDir: "{app}\TcMenu"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.App.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.App.TcMenu.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.App.TcMenu.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.App.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.DesignerFrame.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.EventLogger.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.EventLogger.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.Forms.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.Forms.Nc.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.Forms.Nc.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\TcHmiPro\TcApplication\bin\Release\Beckhoff.Forms.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Interop.TCEVENTLOGGERLib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Interop.TcEventLogProxyLib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\Interop.TCSYSTEMLib.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -98,7 +85,9 @@ Source: "H:\TcHmiPro\TcApplication\bin\Release\tcAppPlcManual.dll"; DestDir: "{a
 Source: "H:\TcHmiPro\TcApplication\bin\Release\TcAppUser.usr"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\TcHmiPlugIn.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "H:\TcHmiPro\TcApplication\bin\Release\TwinCAT.Ads.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "H:\TcHmiPro\TcApplication\bin\Release\TwinCAT.Ads.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "H:\TcHmiPro\TcApplication\bin\Release\SerialBoxes.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "H:\TcHmiPro\TcApplication\bin\Release\FilterControls.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "H:\TcHmiPro\TcApplication\bin\Release\SoftwareLocker.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
