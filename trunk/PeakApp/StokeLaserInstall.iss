@@ -5,7 +5,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{5581AA48-8CD1-4C17-B2EA-882C7089B206}
+AppID={{5581AA48-8CD1-4C17-B2EA-882C7089B206}
 AppName={cm:MyAppName}
 AppVersion=1.0
 ;AppVerName=Stoke Laser Cutting Control System 1.0
@@ -18,14 +18,15 @@ DefaultGroupName=Stoke Robot
 DisableProgramGroupPage=yes
 OutputBaseFilename=Stoke Laser Cutting Control System Setup
 SetupIconFile=H:\TcHmiPro\TcApplication\Icons\stokerobot.ico
-Compression=lzma2
-SolidCompression=yes
+Compression=lzma2/Max
+SolidCompression=true
 VersionInfoVersion=1.0
-UserInfoPage=yes
+UserInfoPage=true
 VersionInfoCompany=Nanjing Stoke Robot System Co.,Ltd.
 VersionInfoProductName=Stoke Laser Cutting Control System 1.0
 VersionInfoDescription=Stoke Laser Cutting Control System
 VersionInfoCopyright=Nanjing Stoke Robot System Co.,Ltd.
+MinVersion=,5.1.2600
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "H:\TcHmiPro\TcApplication\License\1033\license.txt"
